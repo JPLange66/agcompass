@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ag Compass — Desktop and laptop setup</title>
+  <meta name="description" content="Setup instructions for the Ag Compass decision board. Concept mailer page for tracking code AGW-SAG-2026. No password or payment is collected.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ag Compass">
+  <meta name="application-name" content="Ag Compass">
+  <meta name="theme-color" content="#182840">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:ital,wght@0,600;1,400&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="mast">
+    <div class="wrap mast-inner">
+      <img class="logo" src="assets/ag_compass_logo.png" width="56" height="56" alt="Ag Compass logo: bronze compass rose on navy with an Arizona sunburst">
+      <div class="titles">
+        <h1>Ag Compass</h1>
+        <p class="tag">Leave the drought to nature, not your bank account.</p>
+      </div>
+      <nav aria-label="Primary">
+        <a class="btn primary" href="index.html">Open the board</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap" style="padding-top:32px;padding-bottom:80px">
+    <p class="muted" id="code-banner"></p>
+    <h2>Set this board up on a desktop or laptop</h2>
+    <p class="install-note">On an iPhone: open this site in Safari, tap Share, then <strong>Add to Home Screen</strong> — the same way as Langenator. The crop table is easier on a larger screen, but the first look can start from the phone icon.</p>
+    <p class="lede">Ag Compass is built as a farmer decision board for a larger screen — the crop table, gauges, and print reports are easier to use on a computer than on a phone. This page is the destination a Saguaro founding-sponsor mailer QR would open. It is a pitch concept, not a live tracking system, and it does not collect a password or a payment.</p>
+    <div class="setup-hero">
+      <img src="assets/mailer-qr.svg" width="196" height="196" alt="Illustrative QR code for tracking code AGW-SAG-2026" style="background:#ECDEC8;border-radius:8px">
+      <div class="card">
+        <h3>Tracking code</h3>
+        <div class="stat" id="code-display">AGW-SAG-2026</div>
+        <p class="muted">Intended for an AgWest Farm Credit client mailer under a Saguaro Founding Sponsor package. AgWest has been pitched, not signed. Until a public host URL is chosen, the QR encodes the setup instructions and this code, not a live domain. This page is not counting clicks.</p>
+      </div>
+    </div>
+    <ol class="steps">
+      <li>Open this mailer at a desk, not as the only copy on a phone.</li>
+      <li>On a Windows, Mac, or Chromebook computer, open Chrome, Edge, or Safari.</li>
+      <li>Go to <a href="https://jplange66.github.io/agcompass/">https://jplange66.github.io/agcompass/</a>, or use <a href="index.html?src=AGW-SAG-2026">the board on this copy of the site</a>. A short link or QR should carry the tracking code AGW-SAG-2026.</li>
+      <li>Bookmark the board. Use “Reset demo farm” if you want the Yuma lettuce / carrot / tomato review plan, then replace figures with your quotes and district bill.</li>
+      <li>Print a farmer report for your records, or a banker report if you are walking into a lender conversation. The sponsor line and the tracking code print in the header and footer. They do not change the profit math.</li>
+    </ol>
+    <div class="callout">
+      <strong>No account required.</strong> This site does not ask for a password, an account, or a payment. Edits stay in this browser and are not saved to a server.
+    </div>
+    <p><a class="btn primary" href="index.html?src=AGW-SAG-2026">Open the Ag Compass board</a></p>
+  </main>
+  <footer class="site">
+    <div class="wrap">
+      <p>Ag Compass by Ag Global LLC, Tempe, Arizona. Mentions of AgWest Farm Credit or the University of Arizona do not imply endorsement, sponsorship, partnership, or approval.</p>
+    </div>
+  </footer>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const code = params.get("src") || "AGW-SAG-2026";
+    document.getElementById("code-display").textContent = code;
+    document.getElementById("code-banner").textContent = "Mailer code " + code + " — concept only, not a live tracker.";
+  </script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

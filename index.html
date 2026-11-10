@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ag Compass — Leave the drought to nature, not your bank account.</title>
+  <meta name="description" content="Arizona farmer decision board for profit per acre and per acre-foot of water. Yuma lettuce, carrot, and tomato demo for University of Arizona review. Not financial advice and not an endorsement of any bank, university, or supplier.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ag Compass">
+  <meta name="application-name" content="Ag Compass">
+  <meta name="theme-color" content="#182840">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:ital,wght@0,600;1,400&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="mast">
+    <div class="wrap mast-inner">
+      <img class="logo" src="assets/ag_compass_logo.png" width="56" height="56" alt="Ag Compass logo: bronze compass rose on navy with an Arizona sunburst">
+      <div class="titles">
+        <h1>Ag Compass</h1>
+        <p class="tag">Leave the drought to nature, not your bank account.</p>
+      </div>
+      <nav aria-label="Primary">
+        <button type="button" data-view="dashboard" aria-current="page">Dashboard</button>
+        <button type="button" data-view="plan">Farm board</button>
+        <button type="button" data-view="opportunity">Opportunity cards</button>
+        <button type="button" data-view="lender">Lender worksheet</button>
+        <button type="button" data-view="sponsors">Sponsors &amp; forecast</button>
+        <button type="button" data-view="sources">Sources</button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="cab" aria-label="Tractor cab dashboard">
+    <div class="wrap">
+      <div class="cab-cluster">
+        <div class="cab-screen">
+          <div class="screen-chrome">
+            <span class="screen-label">SAT · GOES-18 PSW</span>
+            <span class="screen-label dim">Cab screen · regional picture, not a field forecast</span>
+          </div>
+          <img id="cab-goes" class="goes" src="https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg" alt="NOAA GOES-18 Pacific Southwest GeoColor satellite image, public NESDIS rolling latest, shown as the cab screen">
+        </div>
+        <div class="cab-instruments">
+          <div id="hero-profit" class="hero-profit" aria-live="polite"></div>
+          <div id="gauges" class="gauges" aria-label="Cab analog gauges"></div>
+          <div id="rain-panel" class="lcd-row"></div>
+        </div>
+      </div>
+      <div id="water-warning" class="callout bad" hidden></div>
+      <p class="muted cab-disclaimer">The farmer’s decision destination for the best path to profitability. Demo farm: Yuma lettuce, carrot, and tomato operation for the UA review. Cab styling is a generic navy-and-bronze instrument panel, not a tractor-brand trademark. Figures marked <span class="flag sourced">sourced</span> come from a cited public document. Figures marked <span class="flag assumption">assumption</span>, <span class="flag derived">derived</span>, or <span class="flag jim-example">jim-example</span> are editable defaults, not facts about your farm. Mentions of AgWest, Wilbur-Ellis, USDA, CAP, or the University of Arizona are not endorsements or signed agreements.</p>
+    </div>
+  </section>
+
+  <main class="wrap">
+    <div class="section-head no-print">
+      <div>
+        <p class="lede" style="margin:0">University of Arizona review demo. A Yuma iceberg lettuce, carrot, and tomato plan is loaded so the board has something to show. It is not a real farm and not a university endorsement. Print a clean farmer report or a lender worksheet, or reset the labeled demo farm. This site does not collect a password or a payment.</p>
+      <p class="install-note no-print">On an iPhone: open this page in Safari, tap the Share button, then <strong>Add to Home Screen</strong> — the same way as Langenator. The icon is the Ag Compass logo. This is a mobile web app, not an App Store download.</p>
+      </div>
+      <div>
+        <button class="btn primary" type="button" id="btn-demo">Reset demo farm</button>
+        <button class="btn" type="button" id="btn-print-farmer">Print farmer report</button>
+        <button class="btn" type="button" id="btn-print-banker">Print banker report</button>
+      </div>
+    </div>
+
+    <section id="view-dashboard" class="view active">
+      <h2>Operating board</h2>
+      <p class="lede">Arizona agriculture is almost entirely irrigated. The job of this board is to put market price, water cost, allocation, diesel, and crop choice on one screen so a grower can see the most profitable path that actually fits the water he is allowed to use.</p>
+      <div id="context-cards" class="cards"></div>
+      <div class="weather-row">
+        <div id="diesel-readout"></div>
+        <p class="muted">The cab screen above is NOAA GOES-18 Pacific Southwest GeoColor (NESDIS public rolling latest, 1200×1200). It updates when you reload. If it fails, the page tries the GOES-19 Southwest image, which also resolved on Nov 10, 2026, Arizona time. It is a regional satellite picture, not a field-level forecast.</p>
+      </div>
+      <h3>Grocery demand and Mexico imports</h3>
+      <div id="import-box"></div>
+    </section>
+
+    <section id="view-plan" class="view">
+      <h2>Irrigation district, crop plan, and acre-foot calculator</h2>
+      <p class="lede">Selecting a district loads its published 2024 assessment and included allotment. Both are editable. The allocation caps the crop plan. Demo defaults to a Yuma lettuce / carrot / tomato mix. Add alfalfa, cotton, feed corn, or sorghum to compare water-intensive field crops against higher-value produce.</p>
+      <div class="form-grid">
+        <label class="field">Farm / plan name<input id="farm-name" type="text"></label>
+        <label class="field">Arizona irrigation district<select id="district-select"></select></label>
+        <label class="field">Farm acres<input id="farm-acres" type="number" min="0" step="0.1"></label>
+        <label class="field">District assessment, $/acre (editable)<input id="assessment" type="number" min="0" step="0.01"></label>
+        <label class="field">Included allotment, AF/acre (editable)<input id="included-af" type="number" min="0" step="0.1"></label>
+        <label class="field">Extra water, $/AF above included (editable)<input id="extra-af" type="number" min="0" step="0.01"></label>
+        <label class="field">Total allocation cap, AF (editable)<input id="alloc-af" type="number" min="0" step="0.1"></label>
+      </div>
+      <p id="district-note" class="muted"></p>
+      <div id="plan-metrics" class="cards"></div>
+      <div id="tomato-warning" class="callout warn" hidden><strong>Tomato price is $0.</strong> No Western Arizona tomato FOB was on the Nov 9 shipping-point report, so tomato revenue is zero until you enter a contract or shed price.</div>
+      <div style="overflow-x:auto"><table id="plan-table" class="input-table"></table></div>
+      <p>
+        <label><input type="checkbox" id="jim-alfalfa"> Use Jim’s alfalfa example price ($135/ton) instead of the NASS Arizona September 2026 price ($210/ton)</label>
+      </p>
+      <h3>What the defaults actually are</h3>
+      <div id="crop-notes" class="cards"></div>
+      <h3>Input lines and sponsor slots</h3>
+      <p class="muted">Each line has a supplier field and an editable quoted price so a live rep quote can sit next to the public feed. Sponsorships are inventory slots only — no company has signed. Default is that these line totals are not added into profit, because UA field-crop operating costs already include fertilizer, seed, chemicals, and machinery. Quantities start at 0 for that reason.</p>
+      <div style="overflow-x:auto"><table id="input-table" class="input-table"></table></div>
+      <p><label><input type="checkbox" id="include-inputs"> Include input-line totals (except the district water bill) in profit</label></p>
+    </section>
+
+    <section id="view-opportunity" class="view">
+      <h2>Opportunity cards</h2>
+      <p class="lede">Price context, import share, season, and profit per acre-foot from the current plan. Cards are decision prompts, not planting recommendations.</p>
+      <div id="opp-cards" class="opp"></div>
+      <h3>Import share — what the sources actually say</h3>
+      <div id="import-box-cards"></div>
+    </section>
+
+    <section id="view-lender" class="view">
+      <h2>Lender view — budget and loan worksheet</h2>
+      <p class="lede">Structured for an Arizona ag lender, including a bank such as AgWest Farm Credit, to read the same plan the farmer is using. Naming AgWest describes the intended audience after the University of Arizona review. It is not a credit decision, a rate quote, or an endorsement.</p>
+      <div class="form-grid">
+        <label class="field">Requested operating loan ($)<input id="loan-amount" type="number" min="0" step="1000"></label>
+        <label class="field">Illustrative annual rate (%) <span class="flag assumption">typed, not a quoted AgWest rate</span><input id="loan-rate" type="number" min="0" step="0.05"></label>
+        <label class="field">Term (months)<input id="loan-years" type="number" min="1" step="1"></label>
+      </div>
+      <div id="lender-metrics" class="cards"></div>
+      <div id="lender-path"></div>
+      <div style="overflow-x:auto"><table id="lender-table"></table></div>
+    </section>
+
+    <section id="view-sponsors" class="view">
+      <h2>Sponsors, ads, and the rebuilt revenue forecast</h2>
+      <p class="lede">Farmer subscriptions stay low so the board can become a daily destination. Sponsors and clearly labeled ads carry the revenue. Tiers are Saguaro (highest), Prickly Pear, and Cholla. AgWest is the intended Saguaro Founding Sponsor — a pitch, not a signed deal. Every new-model figure is an assumption for discussion.</p>
+      <div id="tiers" class="cards"></div>
+      <h3>Rebuilt three-year forecast (illustrative)</h3>
+      <div style="overflow-x:auto"><table id="forecast-table"></table></div>
+      <h3>What the financing document showed (subscription-led)</h3>
+      <div id="old-forecast"></div>
+      <h3>Report branding and AgWest client mailer (concept)</h3>
+      <p class="muted">The line below prints on farmer and banker reports as a labeled sponsor slot. It is not a signed deal and does not change the profit math.</p>
+      <label class="field">Sponsor line printed on reports<input id="sponsor-line" type="text"></label>
+      <div id="mailer-box"></div>
+    </section>
+
+    <section id="view-sources" class="view">
+      <h2>Sources, flags, and open items</h2>
+      <p class="lede">Every number on this board should be traceable. Built Nov 10, 2026, America/Phoenix, from the five Ag Compass PDFs plus the public sources below.</p>
+      <div class="callout warn">
+        <strong>Open items.</strong>
+        Confirm 2025–26 assessments and extra-AF schedules directly with each district. Retrieve SRP, MSIDD, Hohokam, and CAIDD published charges. Find current Yuma carrot and tomato FOB or contracts. Replace vegetable yield and cost assumptions with UA or grower budgets when available. Source applied water for Yuma vegetables (Erie consumptive use is not applied irrigation). Re-open the USDA NASS Arizona state agriculture overview for 2025 production values cited in the white paper. Wire live EIA, AMS, and AZMET refreshes instead of a snapshot. Choose a public host and domain; replace the illustrative mailer QR payload with that host URL. Live click tracking for code AGW-SAG-2026 is not wired.
+      </div>
+      <div id="source-list" class="cards"></div>
+    </section>
+
+    <section id="view-print" class="view report">
+      <div class="section-head">
+        <img src="assets/ag_compass_logo.png" width="56" height="56" alt="Ag Compass logo">
+        <div>
+          <h1>Ag Compass report</h1>
+          <p class="tag">Leave the drought to nature, not your bank account.</p>
+        </div>
+      </div>
+      <div id="print-body"></div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p>Ag Compass by Ag Global LLC, Tempe, Arizona. Farmer-first market and operating board. This page is a working review demo, not a live commercial product with billed subscriptions or signed sponsors.</p>
+      <p>Ag Compass is not financial, legal, agronomic, water-rights, or lending advice. Mentions of AgWest Farm Credit, the University of Arizona, Wilbur-Ellis, CAP, SRP, USDA, irrigation districts, or any other organization do not imply endorsement, sponsorship, partnership, or approval. Official logo; navy and bronze are the brand colors.</p>
+    </div>
+  </footer>
+  <script type="module" src="js/app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>
