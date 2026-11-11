@@ -1,6 +1,6 @@
 # Ag Compass
 
-Arizona farmer decision board for profit per acre and, front and center, profit per acre-foot of water. Official Ag Compass logo; navy and bronze brand. Generic tractor-cab dashboard styling (not a manufacturer trademark).
+Arizona’s market board for what Chicago doesn’t trade. Local AMS, NASS, and Federal Milk Marketing Order prices for produce, hay, dairy, and cattle — with an acre-foot profit planner behind the board. Official Ag Compass logo (bronze compass rose with an Arizona sunburst); navy and bronze brand.
 
 Live (GitHub Pages, same pattern as Langenator): https://jplange66.github.io/agcompass/
 

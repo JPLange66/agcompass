@@ -1,15 +1,16 @@
 import {
   BUILD, DIESEL, FERTILIZER, DISTRICTS, CROPS, DEMO_FARM, INPUTS,
   CONTEXT_STATS, IMPORT_REALITY, SPONSOR_TIERS, FORECAST, SOURCES,
-  GOES, AZMET_SNAPSHOT, MAILER,
+  GOES, AZMET_SNAPSHOT, MAILER, DAIRY, CATTLE, REFERENCE, PRODUCE_CARDS,
+  BORDER_LINES, BORDER_NOTE, ZONES, PURPOSE,
 } from "./data.js";
 
 const $ = (id) => document.getElementById(id);
-const STORAGE_KEY = "agcompass-state-v2";
+const STORAGE_KEY = "agcompass-state-v3";
 
-function cropState() {
+function cropState(useDefaults = false) {
   return Object.fromEntries(CROPS.map((c) => [c.id, {
-    acres: String(c.defaultAcres),
+    acres: String(useDefaults ? c.defaultAcres : 0),
     yield: String(c.yield),
     price: String(c.price),
     af: String(c.af),
@@ -25,17 +26,16 @@ function inputState() {
 }
 
 function defaultState() {
-  const d = DISTRICTS.find((x) => x.id === DEMO_FARM.districtId) || DISTRICTS[0];
-  const acres = DEMO_FARM.farmAcres;
+  const d = DISTRICTS[0];
   return {
-    farmName: DEMO_FARM.name,
+    farmName: "Arizona statewide plan",
     districtId: d.id,
-    farmAcres: String(acres),
+    farmAcres: "0",
     assessment: String(d.assessment),
     includedAF: String(d.includedAF),
     extraAF: String(d.extraAF),
-    allocationAf: String(acres * d.includedAF),
-    crops: cropState(),
+    allocationAf: "0",
+    crops: cropState(false),
     inputs: inputState(),
     includeInputs: false,
     loanAmount: 250000,
@@ -43,6 +43,23 @@ function defaultState() {
     loanTerm: 12,
     sponsorLine: "Saguaro Founding Sponsor slot -- AgWest Farm Credit (pitched, not signed)",
     useJimAlfalfa: true,
+    zoneId: "az",
+  };
+}
+function yumaDemoState() {
+  const d = DISTRICTS.find((x) => x.id === DEMO_FARM.districtId) || DISTRICTS[0];
+  const acres = DEMO_FARM.farmAcres;
+  return {
+    ...defaultState(),
+    farmName: DEMO_FARM.name,
+    districtId: d.id,
+    farmAcres: String(acres),
+    assessment: String(d.assessment),
+    includedAF: String(d.includedAF),
+    extraAF: String(d.extraAF),
+    allocationAf: String(acres * d.includedAF),
+    crops: cropState(true),
+    zoneId: "yuma",
   };
 }
 
@@ -62,8 +79,9 @@ if (saved) {
   state = {
     ...defaultState(),
     ...saved,
-    crops: { ...cropState(), ...(saved.crops || {}) },
+    crops: { ...cropState(false), ...(saved.crops || {}) },
     inputs: { ...inputState(), ...(saved.inputs || {}) },
+    zoneId: saved.zoneId || "az",
   };
 }
 
@@ -101,7 +119,7 @@ function applyDistrict(id) {
 }
 
 function resetDemo() {
-  state = defaultState();
+  state = yumaDemoState();
   persist();
   render();
 }
@@ -215,6 +233,10 @@ function renderCab() {
   const sum = planSummary();
   const diesel = DIESEL.eiaWestCoastLessCA;
   const usedPct = sum.allocation > 0 ? (sum.waterUsed / sum.allocation) * 100 : null;
+  if (!$("gauges")) {
+    renderCommand();
+    return;
+  }
   $("gauges").innerHTML = [
     gaugeSVG(diesel, 3, 9, "AZ ag diesel", money(diesel, 3) + "/gal", { invert: true, caption: "EIA regional · West Coast less CA · on-highway, not a bunker price · week of " + DIESEL.weekOf + " " + kindFlag("sourced") }),
     gaugeSVG(AZMET_SNAPSHOT.soil4F, 32, 100, "Soil temperature", `${num(AZMET_SNAPSHOT.soil4F, 1)}°F`, { invert: false, caption: "AZMET Yuma Valley, 4 in. · " + AZMET_SNAPSHOT.date + " snapshot " + kindFlag("sourced") }),
@@ -267,8 +289,142 @@ function renderCab() {
   }
 }
 
+function spark(values, color) {
+  if (!values?.length) return "";
+  const w = 160, h = 36, pad = 2;
+  const min = Math.min(...values), max = Math.max(...values);
+  const span = max - min || 1;
+  const pts = values.map((v, i) => {
+    const x = pad + (i * (w - pad * 2)) / (values.length - 1);
+    const y = h - pad - ((v - min) / span) * (h - pad * 2);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" aria-hidden="true"><polyline fill="none" stroke="${color}" stroke-width="2" points="${pts}"/></svg>`;
+}
+
+function tickerItems() {
+  return [
+    { k: "Class III", v: "$15.16/cwt", d: "Oct 2026 final · CLS-1026 Nov 4" },
+    { k: "Class IV", v: "$20.54/cwt", d: "Oct 2026 final · CLS-1026 Nov 4" },
+    { k: "AZ Order 131 Class I", v: "$22.87/cwt", d: "November · DMN Vol. 93 Rpt 45" },
+    { k: "AZ all-milk", v: "$19.00/cwt", d: "Sept 2026 · NASS agpr1026" },
+    { k: "Iceberg 24s", v: "$27.75–$30.75", d: "WA film-wrapped · IX_FV120 Nov 10" },
+    { k: "Romaine 24s", v: "$24.75–$27.75", d: "Western AZ · IX_FV120 Nov 10" },
+    { k: "Hearts 12 3-ct", v: "$27.50–$30.75", d: "Western AZ · IX_FV120 Nov 10" },
+    { k: "Alfalfa hay", v: "$210/ton", d: "AZ prices received Sept · NASS" },
+    { k: "Steers 750 lb", v: "$342.66/cwt", d: "AMS_2940 week ending Oct 30" },
+    { k: "Steers 800 lb", v: "$325.48/cwt", d: "Southwest direct, not a single AZ auction" },
+    { k: "Tomatoes", v: "no WA FOB", d: "IX_FV120 Nov 10 · enter a shed price" },
+    { k: "Diesel", v: "$6.429/gal", d: "EIA West Coast less CA, week of Nov 9" },
+    { k: "Cotton (ref.)", v: "$0.733/lb", d: "U.S. upland Sept · not a local board" },
+    { k: "Wheat (ref.)", v: "$6.30/bu", d: "U.S. all wheat Sept · not a local board" },
+  ];
+}
+
+function renderTicker() {
+  const el = $("ticker-track");
+  if (!el) return;
+  const html = tickerItems().map((x) => `<span class="ticker-item"><span class="ticker-k">${x.k}</span><span class="ticker-v">${x.v}</span><span class="ticker-d">${x.d}</span></span>`).join("");
+  el.innerHTML = html + html;
+}
+
+function renderCommand() {
+  renderTicker();
+  const sum = planSummary();
+  const kpi = $("kpi-grid");
+  if (kpi) {
+    kpi.innerHTML = `
+      <div class="kpi"><div class="k">Class III milk</div><div class="v">$${DAIRY.classIII.value.toFixed(2)}</div>${spark(DAIRY.classIIISpark, "#A97F5B")}<div class="s">${DAIRY.classIII.month} · ${DAIRY.classIII.change < 0 ? "" : "+"}$${DAIRY.classIII.change.toFixed(2)} · ${DAIRY.classIII.source}</div></div>
+      <div class="kpi"><div class="k">Class IV milk</div><div class="v">$${DAIRY.classIV.value.toFixed(2)}</div>${spark(DAIRY.classIVSpark, "#ECDEC8")}<div class="s">${DAIRY.classIV.month} · +$${DAIRY.classIV.change.toFixed(2)} · AMS CLS-1026</div></div>
+      <div class="kpi"><div class="k">AZ Order 131 Class I</div><div class="v">$${DAIRY.azOrder131.novClassI.toFixed(2)}</div><div class="s">November announced · Oct was $${DAIRY.azOrder131.octClassI.toFixed(2)} · differential $${DAIRY.azOrder131.differential.toFixed(2)} · ${DAIRY.azOrder131.source}</div></div>
+      <div class="kpi"><div class="k">Profit per acre-foot</div><div class="v">${sum.profitAf == null ? "—" : money(sum.profitAf, 0)}</div><div class="s">From the current zone plan · per acre ${sum.profitAc == null ? "—" : money(sum.profitAc, 0)} · ${num(sum.planted, 0)} ac planted</div></div>
+    `;
+  }
+  const map = $("az-map");
+  if (map && !map.dataset.drawn) {
+    map.dataset.drawn = "1";
+    const base = `<path d="M 20 18 L 168 18 L 200 118 L 188 214 L 28 218 L 12 140 L 20 80 Z" fill="#182840" stroke="#A97F5B" stroke-width="2"/>`;
+    map.innerHTML = base + ZONES.filter(z => z.id !== "az").map((z) =>
+      `<path data-zone="${z.id}" d="${z.path}" fill="rgba(169,127,91,0.18)" stroke="#ECDEC8" stroke-width="1" style="cursor:pointer"><title>${z.name}</title></path>`
+    ).join("");
+    map.addEventListener("click", (e) => {
+      const path = e.target.closest("[data-zone]");
+      if (path) applyZone(path.getAttribute("data-zone"));
+    });
+  }
+  document.querySelectorAll("#az-map [data-zone]").forEach((p) => {
+    p.setAttribute("fill", p.getAttribute("data-zone") === state.zoneId ? "rgba(169,127,91,0.55)" : "rgba(169,127,91,0.18)");
+  });
+  const pills = $("zone-pills");
+  if (pills) {
+    pills.innerHTML = ZONES.map((z) =>
+      `<button type="button" data-zone="${z.id}" aria-pressed="${state.zoneId === z.id ? "true" : "false"}">${z.name}</button>`
+    ).join("");
+    if (!pills.dataset.bound) {
+      pills.dataset.bound = "1";
+      pills.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-zone]");
+        if (b) applyZone(b.getAttribute("data-zone"));
+      });
+    }
+  }
+  const blurb = $("zone-blurb");
+  const z = ZONES.find((x) => x.id === state.zoneId) || ZONES[0];
+  if (blurb) blurb.textContent = z.blurb;
+}
+
+function applyZone(id) {
+  const z = ZONES.find((x) => x.id === id);
+  if (!z) return;
+  state.zoneId = id;
+  if (z.districtId) applyDistrict(z.districtId);
+  if (z.farmAcres) {
+    state.farmAcres = String(z.farmAcres);
+    const d = districtById(state.districtId);
+    if (d) state.allocationAf = String(z.farmAcres * d.includedAF);
+  }
+  if (z.crops) {
+    Object.entries(z.crops).forEach(([cid, acres]) => {
+      if (!state.crops[cid]) state.crops[cid] = {};
+      state.crops[cid].acres = String(acres);
+    });
+  }
+  persist();
+  renderCommand();
+  const view = document.querySelector("nav button[aria-current='page']")?.dataset.view;
+  if (view === "plan") renderPlan();
+  else if (view === "dashboard") renderDashboard();
+}
+
 function renderDashboard() {
   renderCab();
+  renderCommand();
+  const markets = $("market-cards");
+  if (markets) {
+    markets.innerHTML = PRODUCE_CARDS.map((c) => `
+      <div class="mcard"><div class="k">${c.name}</div><div class="v" style="font-size:28px;font-weight:700;margin:6px 0">${c.value}</div><div class="s">${c.range}<br>${c.source}</div></div>
+    `).join("") + `
+      <div class="mcard"><div class="k">Cattle · reference regional</div><div class="v" style="font-size:22px;font-weight:700;margin:6px 0">${CATTLE.steers.map(s => s.wt + " lb $" + s.price).join(" · ")}</div><div class="s">${CATTLE.report}. ${CATTLE.note}</div></div>
+      <div class="mcard"><div class="k">Cotton (CME reference only)</div><div class="v" style="font-size:28px;font-weight:700;margin:6px 0">$${REFERENCE.cotton.value}/lb</div><div class="s">${REFERENCE.cotton.month}. ${REFERENCE.cotton.source}</div></div>
+      <div class="mcard"><div class="k">Wheat (CME reference only)</div><div class="v" style="font-size:28px;font-weight:700;margin:6px 0">$${REFERENCE.wheat.value.toFixed(2)}/bu</div><div class="s">${REFERENCE.wheat.month}. ${REFERENCE.wheat.source}. ${REFERENCE.note}</div></div>
+    `;
+  }
+  const dairy = $("dairy-box");
+  if (dairy) {
+    dairy.innerHTML = `
+      <div class="mcard">
+        <p><strong>Arizona is dairy-intensive.</strong> These are last-known announced Federal Milk Marketing Order and NASS prices, not a live CME cash ticker. November Class III and IV finals have not been announced (typically early December).</p>
+        <p>Base Class I November $${DAIRY.baseClassI.value.toFixed(2)}/cwt (${DAIRY.baseClassI.source}). Advanced Class III skim $${DAIRY.advIIISkim.toFixed(2)}; Advanced Class IV skim $${DAIRY.advIVSkim.toFixed(2)}.</p>
+        <p>Arizona all-milk September 2026 $${DAIRY.azAllMilk.value.toFixed(2)}/cwt, fat ${DAIRY.azAllMilk.fat}% (August $${DAIRY.azAllMilk.aug.toFixed(2)}; September 2025 $${DAIRY.azAllMilk.yearAgo.toFixed(2)}). Milk cows October 2026 $${DAIRY.azCows.value.toLocaleString()}/head. ${DAIRY.azAllMilk.source}.</p>
+        <p class="s">${DAIRY.note}</p>
+      </div>`;
+  }
+  const border = $("border-cards");
+  if (border) {
+    border.innerHTML = BORDER_LINES.map((b) => `
+      <div class="mcard"><div class="k">${b.port}</div><div class="v" style="font-size:22px;font-weight:700;margin:6px 0">${b.crop}</div><div class="s">Season-to-date ${b.std.toLocaleString()} ${b.unit} · that week ${b.week}</div></div>
+    `).join("") + `<p class="s" style="grid-column:1/-1">${BORDER_NOTE}</p>`;
+  }
   $("context-cards").innerHTML = CONTEXT_STATS.map((s) => `
     <div class="card"><div class="stat">${s.value}</div><h3>${s.label}</h3><p class="muted">${s.source}</p></div>
   `).join("");
@@ -374,8 +530,11 @@ function renderPlan() {
     </tr></tbody>`;
   $("include-inputs").checked = !!state.includeInputs;
   $("jim-alfalfa").checked = !!state.useJimAlfalfa;
-  if (parse(state.crops.tomatoes?.price, 0) === 0 && parse(state.crops.tomatoes?.acres, 0) > 0) {
+  const tomatoZero = parse(state.crops.tomatoes?.price, 0) === 0 && parse(state.crops.tomatoes?.acres, 0) > 0;
+  const carrotZero = parse(state.crops.carrots?.price, 0) === 0 && parse(state.crops.carrots?.acres, 0) > 0;
+  if (tomatoZero || carrotZero) {
     $("tomato-warning").hidden = false;
+    $("tomato-warning").innerHTML = `<strong>Tomato and carrot prices start at $0.</strong> No Western Arizona tomato or carrot FOB was on the Nov 10 shipping-point report (IX_FV120), so those revenue lines stay at zero until you enter a contract or shed price.`;
   } else {
     $("tomato-warning").hidden = true;
   }
@@ -578,6 +737,11 @@ function bind() {
     b.addEventListener("click", () => showView(b.dataset.view));
   });
   $("btn-demo").addEventListener("click", resetDemo);
+  const sub = $("btn-subscribe");
+  if (sub) sub.addEventListener("click", () => {
+    const n = $("sub-note");
+    if (n) n.hidden = !n.hidden;
+  });
   $("btn-print-farmer").addEventListener("click", () => printReport("farmer"));
   $("btn-print-banker").addEventListener("click", () => printReport("lender"));
 
@@ -651,5 +815,5 @@ if (params.get("src")) {
   const note = document.createElement("div");
   note.className = "callout good";
   note.innerHTML = `<strong>Mailer code ${params.get("src")}.</strong> This would be tallied once live tracking is hosted. Nothing is being counted on this local board.`;
-  document.querySelector(".cab .wrap")?.appendChild(note);
+  document.querySelector(".command .wrap")?.appendChild(note);
 }

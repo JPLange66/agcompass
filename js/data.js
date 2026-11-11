@@ -1,17 +1,18 @@
 /**
  * Ag Compass sourced defaults — aligned with the main Page
  * (canvas c3671ed0) plus NOAA GOES imagery and the AgWest mailer concept.
- * Built Nov 10, 2026 (America/Phoenix). Defaults are tagged
+ * Built Nov 11, 2026 (America/Phoenix). Defaults are tagged
  * sourced | derived | assumption | jim-example | unverified.
  */
 export const BUILD = {
-  dateLabel: "Nov 10, 2026, America/Phoenix",
+  dateLabel: "Nov 11, 2026, America/Phoenix",
   disclaimer:
     "Ag Compass is a decision board for discussion, not financial, legal, agronomic, water-rights, or lending advice. Mentions of AgWest Farm Credit, the University of Arizona, Wilbur-Ellis, CAP, SRP, USDA, irrigation districts, or any supplier do not imply endorsement, sponsorship, partnership, or approval.",
 };
 
 export const TAGLINE = "Leave the drought to nature, not your bank account.";
-export const SECONDARY = "The farmer’s decision destination for the best path to profitability.";
+export const PURPOSE = "Arizona’s market board for what Chicago doesn’t trade.";
+export const SECONDARY = "The farmer’s decision destination for the best path to profitability. Most of what Arizona grows is not discovered on the CME.";
 
 export const GOES = {
   psw1200: "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg",
@@ -162,7 +163,7 @@ export const CROPS = [
     season: "Yuma winter vegetable window",
     unit: "cartons/acre (24s)",
     yield: 800,
-    price: 30.25,
+    price: 29.25,
     af: 2,
     other: 8000,
     defaultAcres: 200,
@@ -170,7 +171,7 @@ export const CROPS = [
     priceKind: "sourced",
     waterKind: "assumption",
     yieldNote: "Planning assumption — not a sourced 2026 Yuma packout. Enter your cartons/acre.",
-    priceNote: "USDA AMS Phoenix Shipping Point Vegetables (IX_FV120), Nov 9, 2026, Western Arizona, film-lined 24s, mostly $28.75–$31.75. Midpoint $30.25 is a starting FOB, not a net grower return.",
+    priceNote: "USDA AMS Phoenix Shipping Point Vegetables (IX_FV120), Nov 10, 2026, Western Arizona, film-wrapped 24s, mostly $27.75–$30.75. Midpoint $29.25 is a starting FOB, not a net grower return. Film-lined 24s mostly $26.75–$29.75. No AMS reports Nov 11 (Veterans Day).",
     waterNote: "Planning assumption for applied irrigation. Erie et al. lettuce consumptive use is about 9 acre-inches; applied desert irrigation is higher. Enter your applied AF.",
     otherNote: "Planning assumption for non-water operating cost. No 2024–26 Yuma lettuce enterprise budget was retrieved. FOB carton prices overstate net return if packing and selling costs are missing.",
     importNote: "USDA ERS VGS-378 (April 2026): U.S. lettuce production accounted for 93% of domestic availability in 2025. Import share of availability was about 5% for iceberg. Of imported lettuce, 81% came from Mexico and 12% from Canada.",
@@ -182,7 +183,7 @@ export const CROPS = [
     season: "Yuma winter vegetable window",
     unit: "cartons/acre (24s)",
     yield: 800,
-    price: 30.25,
+    price: 26.25,
     af: 2,
     other: 8000,
     defaultAcres: 0,
@@ -190,7 +191,7 @@ export const CROPS = [
     priceKind: "sourced",
     waterKind: "assumption",
     yieldNote: "Planning assumption — not a sourced 2026 Yuma packout.",
-    priceNote: "USDA AMS IX_FV120, Nov 9, 2026, Western Arizona romaine 24s, mostly $28.75–$31.75. Midpoint $30.25 starting FOB. Hearts traded higher (mostly $35.45–$40.75 for 12 3-count) and are not this default.",
+    priceNote: "USDA AMS IX_FV120, Nov 10, 2026, Western Arizona romaine 24s, mostly $24.75–$27.75. Midpoint $26.25 starting FOB. Hearts 12 3-count mostly $27.50–$30.75; green/red leaf 24s mostly $25.50–$28.75. Hearts and leaf are not this default.",
     waterNote: "Planning assumption for applied irrigation. Enter your applied AF.",
     otherNote: "Planning assumption. No 2024–26 Yuma romaine budget was retrieved.",
     importNote: "USDA ERS VGS-378: import share of availability was about 8% for romaine/leaf in 2025.",
@@ -202,15 +203,15 @@ export const CROPS = [
     season: "Yuma cool-season",
     unit: "sacks/acre",
     yield: 600,
-    price: 21,
+    price: 0,
     af: 2.5,
     other: 6000,
     defaultAcres: 120,
     yieldKind: "assumption",
-    priceKind: "sourced",
+    priceKind: "assumption",
     waterKind: "assumption",
     yieldNote: "Planning assumption — not a sourced Yuma packout.",
-    priceNote: "No Western Arizona carrot FOB was on the Nov 9, 2026 IX_FV120 report. Kern District, California, 25-lb sacks loose jumbo were mostly $20.00–$22.00. Midpoint $21 is a California shipping-point start, not a Yuma grower quote.",
+    priceNote: "No Western Arizona carrot FOB was on the Nov 10, 2026 IX_FV120 report. Revenue stays at $0 until you enter a contract or shed price. California quotes on that report were not used as Arizona farm FOB.",
     waterNote: "Planning assumption for applied irrigation. Enter your applied AF.",
     otherNote: "Planning assumption. No 2024–26 Yuma carrot budget was retrieved.",
     importNote: "No Arizona-specific carrot import-share figure was sourced.",
@@ -230,7 +231,7 @@ export const CROPS = [
     priceKind: "assumption",
     waterKind: "assumption",
     yieldNote: "Planning assumption — not a sourced Yuma packout.",
-    priceNote: "No Western Arizona tomato FOB was on the Nov 9, 2026 IX_FV120 report. Enter your contract or shed price, or tomato revenue stays at $0. USDA ERS VGS-378 (April 2026): imports were 68.9% of U.S. fresh tomato availability in 2025; Mexico supplied 90% of U.S. tomato imports in 2023–25.",
+    priceNote: "No Western Arizona tomato FOB was on the Nov 10, 2026 IX_FV120 report. Enter your contract or shed price, or tomato revenue stays at $0. Otay Mesa and Texas tomato quotes on that report were not used as Arizona farm FOB. USDA ERS VGS-378 (April 2026): imports were 68.9% of U.S. fresh tomato availability in 2025; Mexico supplied 90% of U.S. tomato imports in 2023–25.",
     waterNote: "Planning assumption for applied irrigation. Enter your applied AF.",
     otherNote: "Planning assumption. No 2024–26 Yuma tomato budget was retrieved.",
     importNote: "Arizona is both a winter growing area and the Nogales gateway. That is not the same as “80% of Arizona produce comes from Mexico,” which was not verified.",
@@ -404,8 +405,13 @@ export const FORECAST = {
 export const SOURCES = [
   { title: "EIA Weekly On-Highway Diesel Fuel Prices", detail: "Week of Nov 9, 2026, released Nov 10, 2026. West Coast less California $6.429/gal. https://www.eia.gov/petroleum/gasdiesel/" },
   { title: "USDA AMS Illinois Production Cost Report (AMS_3195)", detail: "Week ending Oct 30, 2026. Urea $770, DAP $932.14, MAP $948, potash $517.73, UAN 32% $540 per short ton FOB Illinois. Farm diesel ask $5.71/gal. https://www.ams.usda.gov/mnreports/ams_3195.pdf" },
-  { title: "USDA AMS Phoenix Shipping Point Vegetables IX_FV120", detail: "Nov 9, 2026. Western Arizona iceberg and romaine 24s mostly $28.75–$31.75. https://www.ams.usda.gov/mnreports/ix_fv120.pdf" },
-  { title: "USDA NASS Agricultural Prices, October 2026", detail: "Arizona alfalfa hay, prices received, September 2026, $210/ton. https://esmis.nal.usda.gov/sites/default/release-files/796128/agpr1026.pdf" },
+  { title: "USDA AMS Phoenix Shipping Point Vegetables IX_FV120", detail: "Nov 10, 2026 (no reports Nov 11, Veterans Day). Western Arizona iceberg film-wrapped 24s mostly $27.75–$30.75; romaine 24s mostly $24.75–$27.75; hearts 12 3-count mostly $27.50–$30.75; green/red leaf 24s mostly $25.50–$28.75; broccoli crown-cut 20-lb mostly $18.25–$20.50. No Western Arizona tomato or carrot FOB. https://www.ams.usda.gov/mnreports/ix_fv120.pdf" },
+  { title: "USDA AMS Federal Milk Order Class Prices (CLS-1026)", detail: "November 4, 2026. October 2026 final Class III $15.16/cwt (−$0.88), Class IV $20.54/cwt (+$1.60). https://www.ams.usda.gov/mnreports/dymclassprices.pdf" },
+  { title: "USDA AMS Advanced Dairy Prices (ADV-1126)", detail: "October 21, 2026. November 2026 Base Class I $20.27/cwt. https://www.ams.usda.gov/mnreports/dymadvancedprices.pdf" },
+  { title: "USDA AMS Dairy Market News Vol. 93 Report 45", detail: "Week of Nov 2–6, 2026, MMN slug 2998. Arizona Order 131 (Phoenix) October Class I $21.48, November Class I $22.87; Class I differential $2.60. https://www.ams.usda.gov/mnreports/dywweeklyreport.pdf" },
+  { title: "USDA AMS Southwest Direct Cattle (AMS_2940)", detail: "Week ending Oct 30, 2026. AZ/CA/NV ML 1-2 steers FOB: 750 lb $342.66, 800 lb $325.48, 850 lb $321.20 per cwt. Regional direct, not a single Arizona auction." },
+  { title: "USDA AMS Fresh Fruit and Vegetable Shipments (FVDDAILY_MOV)", detail: "Nov 10, 2026. Selected Mexico-origin lines only, 40,000-lb units: Nogales white seedless grapes 3,006 season-to-date (week 0); flame seedless 1,314; Sweet Celebration 453; Sugraone 386; Prime 323. San Luis dates-organic 120 season-to-date / 9 units that week. Not a complete port total." },
+  { title: "USDA NASS Agricultural Prices, October 2026 (agpr1026, released Oct 30, 2026)", detail: "Arizona alfalfa hay, prices received, September 2026, $210/ton (same as August; $180 September 2025); other hay $175. Arizona all-milk September 2026 $19.00/cwt, fat 4.03% (August $19.60; September 2025 $19.70). Arizona milk cows October 2026 $3,200/head. U.S. upland cotton September 2026 $0.733/lb (reference). U.S. all wheat September 2026 $6.30/bu (reference). Arizona wheat state table withheld (S)/(D). No Arizona hay auction report was retrieved for this build. https://esmis.nal.usda.gov/sites/default/release-files/796128/agpr1026.pdf" },
   { title: "USDA ERS Vegetables and Pulses Outlook, April 2026 (VGS-378)", detail: "Imports 35% of U.S. fresh vegetable availability in 2025; Mexico 77% of those imports. https://www.ers.usda.gov/media/20874/vgs-378.pdf" },
   { title: "CAP Final 2026–2030 Water Rate Schedule", detail: "Board approved June 5, 2025. Energy $85/AF; full delivery $309/AF. https://library.cap-az.com/documents/departments/finance/Final-CAWCD-2026-2030-Water-Rate-Schedule.pdf" },
   { title: "ASFMRA Arizona, Bill Moody, Yuma County Market Trends, 2024 Outlook", detail: "2024 irrigation district O&M assessments and included allotments used as editable starting points." },
@@ -417,4 +423,76 @@ export const SOURCES = [
   { title: "Wellton-Mohawk Irrigation & Drainage District", detail: "https://www.wmidd.org/irrigation.html" },
   { title: "Farm Credit, Arizona at a glance (Dec. 31, 2024)", detail: "Cited in the Institutional Financing PDF: 1,127 Arizona customers, $3.4 billion loan volume, $25.6 million patronage. Not an endorsement." },
   { title: "Ag Compass source PDFs", detail: "Executive summary, white paper, final draft, go-to-market, and institutional financing in /workspace/agcompass/." },
+];
+
+
+export const DAIRY = {
+  classIII: { value: 15.16, unit: "$/cwt", month: "October 2026 final", change: -0.88, source: "AMS CLS-1026, Nov 4, 2026, dymclassprices.pdf" },
+  classIV: { value: 20.54, unit: "$/cwt", month: "October 2026 final", change: 1.60, source: "AMS CLS-1026, Nov 4, 2026" },
+  classIIISpark: [14.59, 14.94, 16.16, 16.82, 16.92, 15.98, 15.52, 16.64, 16.04, 15.16],
+  classIVSpark: [13.55, 16.29, 18.94, 20.22, 22.32, 20.96, 18.34, 17.36, 18.94, 20.54],
+  sparkLabel: "January–October 2026 monthly finals",
+  baseClassI: { value: 20.27, month: "November 2026", source: "AMS ADV-1126, Oct 21, 2026, dymadvancedprices.pdf" },
+  advIIISkim: 10.38,
+  advIVSkim: 16.03,
+  azOrder131: {
+    octClassI: 21.48,
+    novClassI: 22.87,
+    differential: 2.60,
+    source: "AMS Dairy Market News Vol. 93 Report 45, week of Nov 2–6, 2026, MMN slug 2998, dywweeklyreport.pdf",
+  },
+  azAllMilk: { value: 19.00, month: "September 2026", fat: 4.03, aug: 19.60, yearAgo: 19.70, source: "NASS agpr1026, released Oct 30, 2026" },
+  azCows: { value: 3200, asOf: "October 2026", source: "NASS agpr1026" },
+  note: "November Class III and IV finals have not been announced (typically early December). Last-known announced prices, not a live CME cash ticker. Canvas cannot fetch; this site embeds the same dated values.",
+};
+
+export const CATTLE = {
+  report: "AMS_2940 Southwest Direct Cattle (AZ/CA/NV), week ending Oct 30, 2026",
+  steers: [
+    { wt: 750, price: 342.66 },
+    { wt: 800, price: 325.48 },
+    { wt: 850, price: 321.20 },
+  ],
+  note: "ML 1-2 steers, FOB, $/cwt. Regional direct trade, not a single Arizona auction sale. A dedicated Arizona auction report was not retrieved for this build.",
+};
+
+export const REFERENCE = {
+  note: "Cotton and wheat appear only as reference points. They trade on CME; they are not the board’s local-discovery focus.",
+  cotton: { value: 0.733, unit: "$/lb", month: "September 2026 U.S. upland", source: "NASS agpr1026. Columns: 2011 base $0.880, Sept 2025 $0.608, Aug 2026 $0.667, Sept 2026 $0.733. No Arizona monthly cotton price was in the state table used here." },
+  wheat: { value: 6.30, unit: "$/bu", month: "September 2026 U.S. all wheat", source: "NASS agpr1026 narrative. Arizona wheat state table withheld (S)/(D)." },
+};
+
+export const PRODUCE_CARDS = [
+  { name: "Iceberg lettuce", value: "$29.25", range: "Mostly $27.75–$30.75, film-wrapped 24s", source: "AMS IX_FV120, Nov 10, 2026, Western Arizona shipping point. Midpoint used in the planner." },
+  { name: "Romaine 24s", value: "$26.25", range: "Mostly $24.75–$27.75", source: "AMS IX_FV120, Nov 10, 2026, Western Arizona." },
+  { name: "Romaine hearts", value: "$27.50–$30.75", range: "12 3-count, mostly", source: "AMS IX_FV120, Nov 10, 2026, Western Arizona." },
+  { name: "Green / red leaf 24s", value: "$25.50–$28.75", range: "Mostly", source: "AMS IX_FV120, Nov 10, 2026, Western Arizona." },
+  { name: "Broccoli crown-cut", value: "$18.25–$20.50", range: "20-lb cartons, mostly", source: "AMS IX_FV120, Nov 10, 2026, Western Arizona." },
+  { name: "Tomatoes", value: "Enter price", range: "No Western Arizona FOB on this report", source: "AMS IX_FV120, Nov 10, 2026. Otay Mesa / Texas quotes were not used as Arizona farm FOB." },
+  { name: "Carrots", value: "Enter price", range: "No Western Arizona FOB on this report", source: "AMS IX_FV120, Nov 10, 2026. California quotes were not used as Arizona farm FOB." },
+  { name: "Melons, citrus, dates, pecans", value: "Not on this report", range: "No Arizona shipping-point quote retrieved", source: "IX_FV120 is a vegetable report. Those commodities need their own AMS shipping-point or terminal series." },
+  { name: "Alfalfa hay", value: "$210/ton", range: "Arizona prices received, Sept 2026", source: "NASS agpr1026, released Oct 30, 2026. Same as August; $180 Sept 2025. Other hay $175. No hay auction or direct AMS report was retrieved; this is prices received, not an auction sale." },
+];
+
+export const BORDER_LINES = [
+  { port: "Nogales", crop: "Grapes — white seedless type", std: 3006, week: 0, unit: "40,000-lb units" },
+  { port: "Nogales", crop: "Grapes — flame seedless", std: 1314, week: 0, unit: "40,000-lb units" },
+  { port: "Nogales", crop: "Grapes — Sweet Celebration", std: 453, week: 0, unit: "40,000-lb units" },
+  { port: "Nogales", crop: "Grapes — Sugraone", std: 386, week: 0, unit: "40,000-lb units" },
+  { port: "Nogales", crop: "Grapes — Prime", std: 323, week: 0, unit: "40,000-lb units" },
+  { port: "San Luis", crop: "Dates — organic", std: 120, week: 9, unit: "40,000-lb units" },
+];
+export const BORDER_NOTE = "USDA AMS FVDDAILY_MOV, Nov 10, 2026. Mexico-origin lines only, matched to the commodity heading immediately above each Nogales or San Luis row. Season-to-date and Nov 3–9 week (Nov 7–8 blank as weekend). This is a selected, verified extract — not a complete port total and not a crop-family rollup.";
+
+export const ZONES = [
+  { id: "az", name: "Statewide", path: "M 92 12 L 168 20 L 200 118 L 188 210 L 40 218 L 18 150 L 28 92 L 60 40 Z", blurb: "Statewide board. Yuma is one zone among many. Zones are a geographic selector, not a 2022 Census sales ranking — NASS county-profile PDFs were not retrieved as PDFs this build." },
+  { id: "yuma", name: "Yuma", path: "M 18 150 L 70 150 L 70 218 L 40 218 Z", blurb: "Yuma winter vegetables, desert hay, and the San Luis crossing. Review demo mix: iceberg, carrots, tomatoes (tomato and carrot prices start at $0 until you enter a shed or contract price).", districtId: "ycwua", farmAcres: 400, crops: { iceberg: 200, carrots: 120, tomatoes: 80 } },
+  { id: "lapaz", name: "La Paz / Parker", path: "M 28 92 L 80 92 L 80 150 L 18 150 Z", blurb: "La Paz / Parker river-valley hay and field crops. UA La Paz 2024 budgets inform alfalfa, cotton, and sorghum cost defaults." },
+  { id: "maricopa", name: "Maricopa / Central AZ", path: "M 80 92 L 140 92 L 140 150 L 80 150 Z", blurb: "Central Arizona dairy, hay, vegetables, and cotton country around Phoenix and the AMAs." },
+  { id: "pinal", name: "Pinal", path: "M 90 150 L 150 150 L 150 188 L 90 188 Z", blurb: "Pinal field crops, hay, and dairy, between the Phoenix AMA and Tucson." },
+  { id: "cochise", name: "Cochise / Willcox", path: "M 150 150 L 200 118 L 188 210 L 150 210 Z", blurb: "Cochise / Willcox — pecans, chiles, wine grapes, and high-desert vegetables." },
+  { id: "graham", name: "Graham / Safford", path: "M 150 118 L 188 118 L 188 150 L 150 150 Z", blurb: "Graham / Safford — Gila Valley cotton, hay, and pecans." },
+  { id: "nogales", name: "Santa Cruz / Nogales", path: "M 110 188 L 150 188 L 150 218 L 110 218 Z", blurb: "Nogales gateway. Border-crossing volumes below are selected AMS movement lines, not a complete port total." },
+  { id: "mohave", name: "Mohave", path: "M 28 40 L 80 40 L 80 92 L 28 92 Z", blurb: "Mohave — river agriculture and high-desert range." },
+  { id: "north", name: "Northern AZ", path: "M 80 12 L 168 20 L 168 80 L 80 80 Z", blurb: "Northern Arizona plateau and high country. Smaller irrigated acreage; included so the board is statewide." },
 ];
