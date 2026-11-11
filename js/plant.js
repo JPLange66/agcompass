@@ -1,5 +1,5 @@
 import {
-  PLANT_CROPS, PLANT_ZONES, COST_SETS, DEMAND_META, PLANT_METHOD, PLANT_AS_OF
+  PLANT_CROPS, PLANT_ZONES, DEMAND_META, PLANT_METHOD, PLANT_AS_OF, defaultEdits
 } from "./plant-data.js";
 
 const money0 = (n) =>
@@ -36,42 +36,50 @@ function demandBadge(d) {
   return `<span class="plant-demand ${a.cls}" title="${String(d.tip || "").replace(/"/g, "&quot;")}"><span class="plant-arrow">${a.glyph}</span>${date}</span>`;
 }
 
+function cropTip(c) {
+  return [
+    c.priceSrc, c.yieldSrc, c.waterSrc,
+    c.seedSrc, c.fertSrc, c.dieselSrc, c.laborSrc, c.irrigSrc, c.otherSrc
+  ].filter(Boolean).join(" ");
+}
+
+function inputsOf(e) {
+  return (e.seed || 0) + (e.fert || 0) + (e.diesel || 0) + (e.labor || 0) + (e.irrig || 0) + (e.other || 0);
+}
+
 function compute(state) {
   const acres = Math.max(0, state.acres);
   const allot = Math.max(0, state.allot);
-  const custom = state.costSet !== "bycrop";
-  const customSum = state.seed + state.fert + state.diesel + state.labor + state.irrig;
   const ranked = [];
   const pending = [];
   for (const c of PLANT_CROPS) {
-    const canRank = c.rankable !== false && c.price > 0 && c.yield > 0 && c.af > 0;
+    const e = state.edits[c.id] || defaultEdits()[c.id];
+    const price = e.price;
+    const yld = e.yield;
+    const af = e.af;
     const d = c.demand || {};
+    const canRank = price > 0 && yld > 0 && af > 0;
     if (!canRank) {
-      pending.push({ c, d });
+      pending.push({ c, d, e });
       continue;
     }
-    const rev = c.price * c.yield;
-    const inputs = custom ? customSum : c.other + state.irrig;
+    const rev = price * yld;
+    const inputs = inputsOf(e);
     const netA = rev - inputs;
-    const netAF = c.af > 0 ? netA / c.af : null;
-    const plantable = Math.min(acres, c.af > 0 ? allot / c.af : 0);
+    const netAF = af > 0 ? netA / af : null;
+    const plantable = Math.min(acres, af > 0 ? allot / af : 0);
     const farm = netA * plantable;
-    ranked.push({ c, d, rev, inputs, netA, netAF, plantable, farm, waterNeed: acres * c.af });
+    ranked.push({ c, d, e, rev, inputs, netA, netAF, plantable, farm, waterNeed: acres * af });
   }
   ranked.sort((a, b) => (b.netAF ?? -1e12) - (a.netAF ?? -1e12));
-  return { ranked, pending, custom, acres, allot };
+  return { ranked, pending, acres, allot };
 }
 
 function card(row, kind) {
   const label = kind === "best" ? "Best bet" : kind === "runner" ? "Runner-up" : "Avoid";
-  const tip = [
-    row.c.priceSrc,
-    row.c.yieldSrc,
-    row.c.waterSrc,
-    row.c.costSrc
-  ].filter(Boolean).join(" ");
+  const tip = cropTip(row.c);
   return `
-    <article class="plant-card plant-card-${kind}" title="${String(tip).replace(/"/g, "&quot;")}">
+    <article class="plant-card plant-card-${kind}" data-crop="${row.c.id}" title="${String(tip).replace(/"/g, "&quot;")}">
       <div class="plant-card-top">
         <span class="plant-badge">${label}</span>
         ${demandBadge(row.d)}
@@ -90,9 +98,9 @@ function card(row, kind) {
 }
 
 function rowHtml(row) {
-  const tip = [row.c.priceSrc, row.c.yieldSrc, row.c.waterSrc, row.c.costSrc].filter(Boolean).join(" ");
+  const tip = cropTip(row.c);
   return `
-    <div class="plant-row" title="${String(tip).replace(/"/g, "&quot;")}">
+    <div class="plant-row" data-crop="${row.c.id}" title="${String(tip).replace(/"/g, "&quot;")}">
       <div class="plant-row-name">${row.c.name}${srcMark(tip)}</div>
       <div class="plant-row-v">${money0(row.netAF)}<span> / AF</span></div>
       <div class="plant-row-v">${money0(row.netA)}<span> / ac</span></div>
@@ -104,42 +112,40 @@ function rowHtml(row) {
 
 function pendingHtml(p) {
   return `
-    <div class="plant-pending">
+    <div class="plant-pending" data-crop="${p.c.id}">
       <div class="plant-row-name">${p.c.name}${srcMark(p.c.priceSrc)}</div>
       <div class="plant-pending-note">No AZ FOB</div>
       <div class="plant-row-d">${demandBadge(p.d)}</div>
     </div>`;
 }
 
+function fieldVal(n) {
+  if (n == null || !Number.isFinite(n)) return "";
+  return String(n);
+}
+
 export function mountPlant(root) {
   if (!root) return;
-  const start = COST_SETS.bycrop;
   const state = {
     zone: "yuma",
     acres: 120,
     allot: 600,
-    costSet: "bycrop",
-    seed: start.seed,
-    fert: start.fert,
-    diesel: start.diesel,
-    labor: start.labor,
-    irrig: start.irrig,
+    selected: "iceberg",
+    edits: defaultEdits(),
     srcOpen: false
   };
 
-  function applySet(id, fromEdit) {
-    if (fromEdit) {
-      state.costSet = "custom";
-      return;
-    }
-    const set = COST_SETS[id];
-    if (!set) return;
-    state.costSet = id;
-    state.seed = set.seed;
-    state.fert = set.fert;
-    state.diesel = set.diesel;
-    state.labor = set.labor;
-    state.irrig = set.irrig;
+  function cropOf(id) {
+    return PLANT_CROPS.find((c) => c.id === id) || PLANT_CROPS[0];
+  }
+
+  function isDirty(id) {
+    const c = cropOf(id);
+    const e = state.edits[id];
+    if (!e) return false;
+    return ["price", "yield", "af", "seed", "fert", "diesel", "labor", "irrig", "other"].some(
+      (k) => Number(e[k]) !== Number(c[k])
+    );
   }
 
   function render() {
@@ -153,16 +159,16 @@ export function mountPlant(root) {
     const rec = best && vs
       ? `With ${num(allot, 0)} AF in ${zoneName}, ${best.c.name.toLowerCase()} nets about ${money0(best.netAF)}/AF vs ${vs.c.name.toLowerCase()} ${money0(vs.netAF)}/AF.`
       : "";
-    const chips = [
-      ["bycrop", "By crop"],
-      ["alfalfa", "Alfalfa"],
-      ["cotton", "Cotton"],
-      ["durum", "Durum"],
-      ["produce", "Produce"],
-      ...(state.costSet === "custom" ? [["custom", "My costs"]] : [])
-    ].map(([id, label]) => {
-      const pressed = state.costSet === id;
-      return `<button type="button" class="plant-chip" data-set="${id}" aria-pressed="${pressed}">${label}</button>`;
+
+    const sel = cropOf(state.selected);
+    const e = state.edits[sel.id];
+    const dirty = isDirty(sel.id);
+    const anyDirty = PLANT_CROPS.some((c) => isDirty(c.id));
+
+    const cropChips = PLANT_CROPS.map((c) => {
+      const pressed = state.selected === c.id;
+      const mark = isDirty(c.id) ? " •" : "";
+      return `<button type="button" class="plant-chip" data-crop="${c.id}" aria-pressed="${pressed}">${c.name}${mark}</button>`;
     }).join("");
 
     const demandStrip = [...ranked, ...pending].map((r) => {
@@ -171,7 +177,10 @@ export function mountPlant(root) {
       return `<span class="plant-demand-pill ${a.cls}" title="${String(d.tip || "").replace(/"/g, "&quot;")}"><b>${r.c.name}</b> <span class="plant-arrow">${a.glyph}</span> <span class="plant-demand-d">${d.dir ? "Nov 6" : ""}</span></span>`;
     }).join("");
 
-    const setNote = COST_SETS[state.costSet === "custom" ? "bycrop" : state.costSet];
+    const field = (key, label, title) =>
+      `<label class="plant-field" title="${String(title || "").replace(/"/g, "&quot;")}">${label}${srcMark(title)}
+         <input id="plant-${key}" type="number" min="0" step="0.01" value="${fieldVal(e[key])}">
+       </label>`;
 
     root.innerHTML = `
       <div class="plant-head">
@@ -194,15 +203,23 @@ export function mountPlant(root) {
       </div>
       <div class="plant-costs">
         <div class="plant-cost-head">
-          <span>Costs / acre</span>
-          <div class="plant-chips">${chips}</div>
+          <span>${sel.name}${dirty ? " · edited" : ""}</span>
+          <div class="plant-reset-row">
+            <button type="button" class="plant-reset" id="plant-reset-one" ${dirty ? "" : "disabled"}>Reset defaults</button>
+            <button type="button" class="plant-reset" id="plant-reset-all" ${anyDirty ? "" : "disabled"}>Reset all</button>
+          </div>
         </div>
-        <div class="plant-cost-grid">
-          <label class="plant-field">Seed <input id="plant-seed" type="number" min="0" step="0.01" value="${state.seed}"></label>
-          <label class="plant-field">Fertilizer <input id="plant-fert" type="number" min="0" step="0.01" value="${state.fert}"></label>
-          <label class="plant-field">Diesel <input id="plant-diesel" type="number" min="0" step="0.01" value="${state.diesel}"></label>
-          <label class="plant-field">Labor <input id="plant-labor" type="number" min="0" step="0.01" value="${state.labor}"></label>
-          <label class="plant-field">Irrigation <input id="plant-irrig" type="number" min="0" step="0.01" value="${state.irrig}"></label>
+        <div class="plant-chips plant-crop-picks">${cropChips}</div>
+        <div class="plant-cost-grid plant-edit-grid">
+          ${field("price", "Price", sel.priceSrc)}
+          ${field("yield", "Yield / acre", sel.yieldSrc)}
+          ${field("af", "AF / acre", sel.waterSrc)}
+          ${field("seed", "Seed", sel.seedSrc)}
+          ${field("fert", "Fertilizer", sel.fertSrc)}
+          ${field("diesel", "Diesel", sel.dieselSrc)}
+          ${field("labor", "Labor", sel.laborSrc)}
+          ${field("irrig", "Irrigation", sel.irrigSrc)}
+          ${field("other", "Other", sel.otherSrc)}
         </div>
       </div>
       ${rec ? `<p class="plant-rec">${rec}</p>` : ""}
@@ -221,20 +238,16 @@ export function mountPlant(root) {
       <div class="yc-drawer plant-drawer" ${state.srcOpen ? "" : "hidden"}>
         <p>${PLANT_METHOD}</p>
         <p>${DEMAND_META.report}, issued ${DEMAND_META.issued}, ads for ${DEMAND_META.adsFor}. ${DEMAND_META.region} ${DEMAND_META.method}</p>
-        ${setNote ? `<p>${setNote.note}</p>` : ""}
-        ${PLANT_CROPS.map((c) => `<p><strong>${c.name}:</strong> ${c.priceSrc} ${c.yieldSrc} ${c.waterSrc} ${c.costSrc} ${c.demand?.tip || ""}</p>`).join("")}
+        ${PLANT_CROPS.map((c) => `<p><strong>${c.name}:</strong> ${cropTip(c)} ${c.demand?.tip || ""}</p>`).join("")}
       </div>
     `;
 
-    const bindNum = (id, key) => {
+    const bindNum = (id, apply) => {
       const el = root.querySelector(id);
       if (!el) return;
       el.addEventListener("input", () => {
         const v = parseFloat(el.value);
-        state[key] = Number.isFinite(v) ? v : 0;
-        if (["seed", "fert", "diesel", "labor", "irrig"].includes(key) && state.costSet === "bycrop") {
-          state.costSet = "custom";
-        }
+        apply(Number.isFinite(v) ? v : 0);
         render();
         const again = root.querySelector(id);
         if (again) {
@@ -247,20 +260,32 @@ export function mountPlant(root) {
       state.zone = e.target.value;
       render();
     });
-    bindNum("#plant-acres", "acres");
-    bindNum("#plant-allot", "allot");
-    bindNum("#plant-seed", "seed");
-    bindNum("#plant-fert", "fert");
-    bindNum("#plant-diesel", "diesel");
-    bindNum("#plant-labor", "labor");
-    bindNum("#plant-irrig", "irrig");
-    root.querySelectorAll("[data-set]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-set");
-        if (id === "custom") return;
-        applySet(id);
+    bindNum("#plant-acres", (v) => { state.acres = v; });
+    bindNum("#plant-allot", (v) => { state.allot = v; });
+    ["price", "yield", "af", "seed", "fert", "diesel", "labor", "irrig", "other"].forEach((key) => {
+      bindNum(`#plant-${key}`, (v) => {
+        state.edits[state.selected][key] = v;
+      });
+    });
+    root.querySelectorAll("[data-crop]").forEach((el) => {
+      el.addEventListener("click", () => {
+        const id = el.getAttribute("data-crop");
+        if (!id) return;
+        state.selected = id;
         render();
       });
+    });
+    root.querySelector("#plant-reset-one")?.addEventListener("click", () => {
+      const c = cropOf(state.selected);
+      state.edits[c.id] = {
+        price: c.price, yield: c.yield, af: c.af,
+        seed: c.seed, fert: c.fert, diesel: c.diesel, labor: c.labor, irrig: c.irrig, other: c.other
+      };
+      render();
+    });
+    root.querySelector("#plant-reset-all")?.addEventListener("click", () => {
+      state.edits = defaultEdits();
+      render();
     });
     root.querySelector(".plant-src-btn")?.addEventListener("click", () => {
       state.srcOpen = !state.srcOpen;

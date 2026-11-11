@@ -1,6 +1,6 @@
-/* Sourced planning inputs for the "What should I plant?" tool.
-   Every price, yield, water figure, cost, and demand signal is dated.
-   Assumptions are flagged. Nothing here is invented as a market quote. */
+/* Sourced per-crop defaults for the "What should I plant?" tool.
+   Every price, yield, water, and cost figure is dated. Assumptions and
+   unit conversions are flagged in tooltips and the sources drawer only. */
 
 export const PLANT_AS_OF = "November 11, 2026, Arizona time";
 
@@ -18,65 +18,6 @@ export const PLANT_ZONES = [
   { id: "az", name: "Statewide" }
 ];
 
-export const COST_SETS = {
-  bycrop: {
-    id: "bycrop",
-    label: "By crop",
-    seed: 0,
-    fert: 137.99,
-    diesel: 0,
-    labor: 570.44,
-    irrig: 142.5,
-    note: "Default ranking uses each crop’s own sourced or assumed operating total, plus the irrigation field. The five boxes start at the UA La Paz 2024 alfalfa hay production lines (az2139, June 2025) so a farmer can edit them. Diesel is $0 because that budget does not itemize farm diesel (custom harvest). Irrigation starts at the Yuma County Water Users’ Association 2024 O&M assessment of $142.50/acre, which includes the first 5 acre-feet (ASFMRA Arizona, Bill Moody, 2024 Outlook)."
-  },
-  alfalfa: {
-    id: "alfalfa",
-    label: "Alfalfa",
-    seed: 0,
-    fert: 137.99,
-    diesel: 0,
-    labor: 570.44,
-    irrig: 278,
-    note: "UA Cooperative Extension, La Paz County 2024 alfalfa hay production budget (az2139, June 2025). Seed $0 in the production year (no seed line). Fertilizer (10-34-00) $137.99. Diesel not itemized. Labor/harvest: irrigation labor $72.75 + additional crop labor $87.95 + custom harvest $377.84 + custom hauling $31.90 = $570.44. Irrigation water $278 ($55 × 5 AF). Chemicals, cash rent, interest, and machinery are in the crop-specific total, not these five boxes."
-  },
-  cotton: {
-    id: "cotton",
-    label: "Cotton",
-    seed: 57,
-    fert: 108.53,
-    diesel: 0,
-    labor: 469.91,
-    irrig: 278,
-    note: "UA La Paz 2024 upland cotton budget (az2139, June 2025). Seed $57. Fertility program $108.53. Diesel not itemized. Labor/harvest: irrigation labor $72.75 + additional $66 + custom harvest $160 + hauling $16.89 + gin/drying $132 + assessments/classing $22.27 = $469.91. Irrigation water $278 ($55 × 5 AF)."
-  },
-  durum: {
-    id: "durum",
-    label: "Durum",
-    seed: 27.6,
-    fert: 360,
-    diesel: 0,
-    labor: 235.16,
-    irrig: 195.5,
-    note: "UA La Paz 2024 durum wheat budget (az2139, June 2025). Seed $27.60. NH3 fertility $360. Diesel not itemized. Labor/harvest: irrigation labor $50.93 + additional $43.23 + custom harvest $60 + hauling $81 = $235.16. Irrigation water $195.50 ($55 × 3.5 AF)."
-  },
-  produce: {
-    id: "produce",
-    label: "Produce",
-    seed: 0,
-    fert: 0,
-    diesel: 0,
-    labor: 8000,
-    irrig: 142.5,
-    note: "No 2024–26 Yuma vegetable enterprise budget was retrieved, so the category split is not sourced. The $8,000 lettuce/romaine/leaf non-water planning total used on this board is placed in labor/harvest as an unallocated lump. Broccoli’s planning total on the board is $7,000; this chip uses the lettuce total. Irrigation starts at YCWUA 2024 O&M $142.50/acre."
-  }
-};
-
-/* Demand arrows: national conventional ad counts this week vs last week in the same
-   AMS National Retail Report (FVWRETAIL), Friday, November 6, 2026, ads for
-   10/31/2026–11/12/2026. Rule, documented here and in the sources drawer:
-   up if ads are up 15% or more, down if down 15% or more, else flat.
-   Arizona-grocer-specific ad counts are not published in that report.
-   Southwest U.S. in the report is Arizona, California, Nevada, and Utah. */
 export const DEMAND_META = {
   title: "Grocer demand",
   report: "USDA AMS National Retail Report — Fruits and Vegetables (FVWRETAIL)",
@@ -87,306 +28,247 @@ export const DEMAND_META = {
   url: "https://www.ams.usda.gov/mnreports/fvwretail.pdf"
 };
 
+const YCWUA_IRRIG = 142.5;
+const YCWUA_IRRIG_SRC = "Yuma County Water Users’ Association 2024 O&M assessment $142.50/acre, includes the first 5 acre-feet (ASFMRA Arizona, Bill Moody, 2024 Outlook). The 2001 UA vegetable budgets recorded irrigation water as $0 in cash operating expenses, with a $31/acre water assessment in ownership costs.";
+
+function vegOther(totalCash, seed, fert, diesel, labor, assessment = 31) {
+  return Math.round((totalCash - seed - fert - diesel - labor + assessment) * 100) / 100;
+}
+
+/* Vegetable component costs, yields, and applied water: UA Cooperative Extension
+   AZ1263, 2001–2002 Arizona Vegetable Crop Budgets, Western Arizona (Yuma and
+   La Paz Counties), Teegerstrom, Palumbo (Yuma Agricultural Center), and
+   Zerkoune. Yuma Valley North fall (lettuce, broccoli) and spring (melons)
+   tables. Dollar costs are 2001 dollars and are not inflated. */
 export const PLANT_CROPS = [
   {
     id: "iceberg",
     name: "Iceberg",
     unit: "cartons/acre",
-    yield: 800,
-    price: 29.25,
-    af: 2,
-    other: 8000,
     completeness: "partial",
-    missing: ["yield", "water", "cost"],
-    priceKind: "sourced",
-    yieldKind: "assumption",
-    waterKind: "assumption",
-    costKind: "assumption",
+    missing: ["cost-year"],
+    price: 29.25, yield: 823, af: 3.42,
+    seed: 95.4, fert: 170.14, diesel: 18.33, labor: 2137.98, irrig: YCWUA_IRRIG, other: 896.66,
+    priceKind: "sourced", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced-2001",
     priceSrc: "AMS IX_FV120, Nov 10, 2026, Western Arizona film-wrapped 24s, mostly $27.75–$30.75. Midpoint $29.25 starting FOB, not a net grower return.",
-    yieldSrc: "Planning assumption, 800 cartons/acre. NASS Vegetables 2025 Summary: Arizona 2025 head lettuce 385 cwt/acre (a 50-lb carton would be about 770 cartons; 800 is not that conversion).",
-    waterSrc: "Planning assumption, 2 AF applied. Erie et al. lettuce consumptive use is about 9 acre-inches; applied desert irrigation is higher.",
-    costSrc: "Planning assumption, $8,000/acre non-water operating cost. No 2024–26 Yuma lettuce budget was retrieved.",
+    yieldSrc: "UA Cooperative Extension AZ1263, 2001–2002, Yuma Valley North fall iceberg: 823 cartons/acre (Table 7A). NASS Vegetables 2025 Summary reported Arizona 2025 head lettuce at 385 cwt/acre, a more recent statewide check, not used as this default.",
+    waterSrc: "UA AZ1263, 2001–2002, Table 7D, Yuma Valley North fall iceberg: total water applied 41.0 inches = 3.42 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 7A, seed/transplants $95.40/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 7A, fertilizer $170.14/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 7A, diesel fuel $18.33/acre (2001 dollars; Table 7D lists 20.7 gallons). EIA West Coast less California on-highway diesel was $6.429/gal in the week of Nov 9, 2026 — not applied as an inflation of this default.",
+    laborSrc: "UA AZ1263 Table 7A, paid labor $90.78 plus custom harvest/post-harvest $2,047.20 = $2,137.98/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 7A total cash operating expenses $3,287.51 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment from Table 7B (chemicals, repairs, interest, services, and ownership water). 2001 dollars.",
     demand: {
       dir: "down",
-      natThis: 241,
-      natLast: 365,
-      natPct: -34,
-      natPrice: 1.99,
-      natPriceLast: 2.79,
-      pack: "Iceberg, each",
-      swAds: 0,
-      swNote: "No Southwest iceberg feature ads in the conventional regional table this week (South Central had 42 ads at $1.99).",
-      importShare: "5%",
-      season: "in",
-      tip: "National ads 241 vs 365 last week (−34%). Advertised $1.99 vs $2.79. Southwest (AZ, CA, NV, UT): no iceberg feature ads this week. AMS FVWRETAIL, issued Nov 6, 2026. Import share of U.S. availability ~5% (ERS VGS-378, Apr 2026). Yuma winter window mid-Nov–mid-Apr."
+      tip: "National ads 241 vs 365 last week (−34%). Southwest (AZ, CA, NV, UT) had no iceberg feature ads this week. AMS FVWRETAIL, issued Nov 6, 2026. Not Arizona-only. Import share of U.S. availability ~5% (ERS VGS-378, Apr 2026)."
     }
   },
   {
     id: "romaine",
     name: "Romaine",
     unit: "cartons/acre",
-    yield: 800,
-    price: 26.25,
-    af: 2,
-    other: 8000,
     completeness: "partial",
-    missing: ["yield", "water", "cost"],
-    priceKind: "sourced",
-    yieldKind: "assumption",
-    waterKind: "assumption",
-    costKind: "assumption",
+    missing: ["cost-year", "pack"],
+    price: 26.25, yield: 712, af: 4.29,
+    seed: 636, fert: 98.67, diesel: 40.35, labor: 3339.22, irrig: YCWUA_IRRIG, other: 468.33,
+    priceKind: "sourced", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced-2001",
     priceSrc: "AMS IX_FV120, Nov 10, 2026, Western Arizona romaine 24s, mostly $24.75–$27.75. Midpoint $26.25 starting FOB.",
-    yieldSrc: "Planning assumption, 800 cartons/acre. Not a sourced 2026 Yuma packout.",
-    waterSrc: "Planning assumption, 2 AF applied.",
-    costSrc: "Planning assumption, $8,000/acre non-water. No 2024–26 Yuma romaine budget was retrieved.",
+    yieldSrc: "UA AZ1263, 2001–2002, Yuma Valley North romaine, Table 4A: 712 cartons/acre, priced in that budget as a 40-pound carton. Today’s FOB is romaine 24s; the farmer can edit the packout.",
+    waterSrc: "UA AZ1263 Table 4D, Yuma Valley North romaine: total water applied 51.5 inches = 4.29 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 4A, seed/transplants $636.00/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 4A, fertilizer $98.67/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 4A, diesel fuel $40.35/acre (2001 dollars; Table 4D lists 45.6 gallons).",
+    laborSrc: "UA AZ1263 Table 4A, paid labor $189.22 plus custom harvest/post-harvest $3,150.00 = $3,339.22/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 4A total cash operating expenses $4,551.57 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment. 2001 dollars.",
     demand: {
       dir: "down",
-      natThis: 613,
-      natLast: 1033,
-      natPct: -41,
-      natPrice: 3.76,
-      natPriceLast: 3.16,
-      pack: "Romaine hearts, 3-count",
-      swAds: 191,
-      swPrice: 4.99,
-      swNote: "Southwest 191 ads at $4.99 (3-count).",
-      importShare: "8%",
-      season: "in",
-      tip: "National ads 613 vs 1,033 last week (−41%). Advertised wtd $3.76 vs $3.16. Southwest (AZ, CA, NV, UT): 191 ads at $4.99. AMS FVWRETAIL, issued Nov 6, 2026. Import share of U.S. availability ~8% for romaine/leaf (ERS VGS-378, Apr 2026). Yuma winter window mid-Nov–mid-Apr."
+      tip: "National ads 613 vs 1,033 last week (−41%). Southwest: 191 ads at $4.99 (3-count). AMS FVWRETAIL, issued Nov 6, 2026. Southwest is AZ, CA, NV, UT — not Arizona-only. Import share ~8% for romaine/leaf (ERS VGS-378, Apr 2026)."
     }
   },
   {
     id: "leaf",
     name: "Leaf",
     unit: "cartons/acre",
-    yield: 800,
-    price: 27.125,
-    af: 2,
-    other: 8000,
     completeness: "partial",
-    missing: ["yield", "water", "cost", "demand"],
-    priceKind: "sourced",
-    yieldKind: "assumption",
-    waterKind: "assumption",
-    costKind: "assumption",
+    missing: ["cost-year", "pack", "demand"],
+    price: 27.125, yield: 1162, af: 4.29,
+    seed: 305.28, fert: 98.67, diesel: 41.98, labor: 6086.56, irrig: YCWUA_IRRIG, other: 647.63,
+    priceKind: "sourced", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced-2001",
     priceSrc: "AMS IX_FV120, Nov 10, 2026, Western Arizona green/red leaf 24s, both mostly $25.50–$28.75. Midpoint $27.13 starting FOB.",
-    yieldSrc: "Planning assumption, 800 cartons/acre.",
-    waterSrc: "Planning assumption, 2 AF applied.",
-    costSrc: "Planning assumption, $8,000/acre non-water. No 2024–26 Yuma leaf budget was retrieved.",
+    yieldSrc: "UA AZ1263, 2001–2002, Yuma Valley North fall leaf lettuce, Table 6A: 1,162 cartons/acre, priced in that budget as a 25-pound carton. Today’s FOB is leaf 24s; the farmer can edit the packout.",
+    waterSrc: "UA AZ1263 Table 6D, Yuma Valley North fall leaf: total water applied 51.5 inches = 4.29 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 6A, seed/transplants $305.28/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 6A, fertilizer $98.67/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 6A, diesel fuel $41.98/acre (2001 dollars; Table 6D lists 47.4 gallons).",
+    laborSrc: "UA AZ1263 Table 6A, paid labor $191.56 plus custom harvest/post-harvest $5,895.00 = $6,086.56/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 6A total cash operating expenses $7,149.12 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment. 2001 dollars.",
     demand: {
       dir: null,
-      pack: "Leaf lettuce",
-      swAds: null,
-      importShare: "8%",
-      season: "in",
-      tip: "No leaf-lettuce advertised-feature line (only iceberg and romaine hearts) in AMS FVWRETAIL, issued Nov 6, 2026. No arrow. Import share of U.S. availability ~8% for romaine/leaf (ERS VGS-378, Apr 2026). Yuma winter window mid-Nov–mid-Apr."
+      tip: "No leaf-lettuce advertised-feature line in AMS FVWRETAIL, issued Nov 6, 2026. No arrow. Import share of U.S. availability ~8% for romaine/leaf (ERS VGS-378, Apr 2026)."
     }
   },
   {
     id: "broccoli",
     name: "Broccoli",
     unit: "20-lb cartons/acre",
-    yield: 600,
-    price: 19.375,
-    af: 2,
-    other: 7000,
     completeness: "partial",
-    missing: ["water", "cost"],
-    priceKind: "sourced",
-    yieldKind: "sourced-converted",
-    waterKind: "assumption",
-    costKind: "assumption",
+    missing: ["cost-year", "pack-conversion"],
+    price: 19.375, yield: 790.4, af: 2.83,
+    seed: 412.13, fert: 144.66, diesel: 17.8, labor: 2771.64, irrig: YCWUA_IRRIG, other: 224.06,
+    priceKind: "sourced", yieldKind: "sourced-converted", waterKind: "sourced", costKind: "sourced-2001",
     priceSrc: "AMS IX_FV120, Nov 10, 2026, Western Arizona crown-cut 20-lb cartons loose, mostly $18.25–$20.50. Midpoint $19.38 starting FOB.",
-    yieldSrc: "600 twenty-pound cartons/acre, converted from NASS Vegetables 2025 Summary Arizona 2024 broccoli yield of 120 cwt/acre (2025 withheld). Conversion assumption: 20 lb per carton.",
-    waterSrc: "Planning assumption, 2 AF applied.",
-    costSrc: "Planning assumption, $7,000/acre non-water. No 2024–26 Yuma broccoli budget was retrieved.",
+    yieldSrc: "UA AZ1263, 2001–2002, Yuma Valley North fall broccoli, Table 5A: 608 cartons/acre of 26-pound cartons, converted to 790.4 twenty-pound cartons (608 × 26 ÷ 20) to match the current FOB unit. NASS Vegetables 2025 Summary: Arizona 2024 broccoli yield 120 cwt/acre (2025 withheld) would be 600 twenty-pound cartons; not used as this default.",
+    waterSrc: "UA AZ1263 Table 5D, Yuma Valley North fall broccoli: total water applied 34.0 inches = 2.83 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 5A, seed/transplants $412.13/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 5A, fertilizer $144.66/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 5A, diesel $16.82 growing plus $0.98 harvest = $17.80/acre (2001 dollars; Table 5D lists 20.1 gallons).",
+    laborSrc: "UA AZ1263 Table 5A, paid labor $117.45 growing plus $2.19 harvest plus custom harvest/post-harvest $2,652.00 = $2,771.64/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 5A total cash operating expenses $4,539.29 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment. 2001 dollars.",
     demand: {
       dir: "up",
-      natThis: 1640,
-      natLast: 1155,
-      natPct: 42,
-      natPrice: 1.90,
-      natPriceLast: 1.97,
-      pack: "Broccoli crown cut, per lb",
-      swAds: 0,
-      swNote: "No Southwest conventional broccoli feature ads this week (South Central and Northwest had lines).",
-      importShare: "34%",
-      season: "in",
-      tip: "National crown-cut ads 1,640 vs 1,155 last week (+42%). Advertised wtd $1.90 vs $1.97 per lb. Bunch ads were 1,806 vs 1,885 (−4%, flat). Southwest (AZ, CA, NV, UT): no conventional broccoli feature ads this week. AMS FVWRETAIL, issued Nov 6, 2026. Import share of U.S. availability 34% (ERS VGS-378, Apr 2026). Yuma winter window mid-Nov–mid-Apr."
+      tip: "National crown-cut ads 1,640 vs 1,155 last week (+42%). Southwest had no conventional broccoli feature ads this week. AMS FVWRETAIL, issued Nov 6, 2026. Import share of U.S. availability 34% (ERS VGS-378, Apr 2026)."
     }
   },
   {
     id: "alfalfa",
     name: "Alfalfa",
     unit: "tons/acre",
-    yield: 8,
-    price: 210,
-    af: 6.8,
-    other: 995.85,
     completeness: "full",
     missing: [],
-    priceKind: "sourced",
-    yieldKind: "sourced",
-    waterKind: "sourced",
-    costKind: "sourced",
-    priceSrc: "NASS Agricultural Prices agpr1026, released Oct 30, 2026: Arizona alfalfa hay, prices received, September 2026, $210/ton. Not an auction lot.",
-    yieldSrc: "UA Cooperative Extension, La Paz County 2024 alfalfa hay production budget (az2139, June 2025): 8.00 tons/acre. Matches Jim’s 8-cutting example.",
-    waterSrc: "6.8 AF mean applied irrigation, Arizona dairy-forage producers surveyed summer 2023 (Ottman/Silvertooth). The same UA budget used 5.00 AF.",
-    costSrc: "UA La Paz 2024 alfalfa hay production budget, total annual costs $1,270.85/acre minus that budget’s $55 × 5.00 AF water line ($275), leaving $995.85 non-water (includes $170 cash rent).",
-    demand: {
-      dir: null,
-      pack: "Alfalfa hay",
-      tip: "Not a grocery produce item. No advertised-feature series in AMS FVWRETAIL (fruits and vegetables), Nov 6, 2026. No retail demand arrow."
-    }
+    price: 210, yield: 9, af: 4,
+    seed: 0, fert: 0, diesel: 0, labor: 539.09, irrig: 183, other: 807.1,
+    priceKind: "sourced", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced",
+    priceSrc: "NASS Agricultural Prices agpr1026, released Oct 30, 2026: Arizona alfalfa hay, prices received, September 2026, $210/ton. Not an auction lot. The UA Yuma 2026 production budget used $200/ton and is not used as the current price.",
+    yieldSrc: "UA Cooperative Extension az2178, January 2026, Yuma County alfalfa hay production budget: 9.00 tons/acre.",
+    waterSrc: "UA az2178, January 2026, Yuma alfalfa hay production: 4.00 AF flood irrigation, from local grower interviews (irrigation chapter). A 2023 Ottman/Silvertooth dairy-forage survey mean of 6.8 AF is a statewide check, not this default.",
+    seedSrc: "UA az2178 Yuma 2026 alfalfa hay production budget has no seed line in the production year (seed is in the establishment budget). Default $0.",
+    fertSrc: "UA az2178 Yuma 2026 alfalfa hay production budget has no fertility-program line in the production year. Default $0. The farmer can enter a fertility bill.",
+    dieselSrc: "UA az2178 does not itemize farm diesel on the alfalfa production table (machinery variable cash is $7.64 and includes fuel at the budget’s $4/gal assumption). Default $0.",
+    laborSrc: "UA az2178 Yuma 2026 alfalfa hay production: irrigation labor $64.00, additional crop labor $66.00, PCA $13.20, custom harvest $360.00, custom hauling $35.89 = $539.09/acre.",
+    irrigSrc: "UA az2178 Yuma 2026 alfalfa hay production irrigation line $183.00 (flood water $45 × 4.00 AF = $180 plus $3 annual repairs).",
+    otherSrc: "Residual of UA az2178 Yuma 2026 alfalfa total annual costs $1,529.19 minus labor $539.09 and irrigation $183.00, covering establishment $351.71, chemicals $110, cash rent $250, interest, other expenses, and machinery. Equals $807.10.",
+    demand: { dir: null, tip: "Not a grocery produce item. No advertised-feature series in AMS FVWRETAIL, Nov 6, 2026. No retail demand arrow." }
   },
   {
     id: "cotton",
     name: "Cotton",
     unit: "lb lint/acre",
-    yield: 1500,
-    price: 0.733,
-    af: 5,
-    other: 1438.29,
     completeness: "partial",
     missing: ["price"],
-    priceKind: "reference",
-    yieldKind: "sourced",
-    waterKind: "sourced",
-    costKind: "sourced",
-    priceSrc: "NASS agpr1026: U.S. upland cotton prices received, September 2026, $0.733/lb. Arizona monthly price was not in the state table. Lint only — seed is not added. CBOT-linked reference, not local discovery.",
-    yieldSrc: "UA La Paz 2024 upland cotton budget: 1,500 lb lint/acre.",
-    waterSrc: "UA La Paz 2024 upland cotton budget: 5.00 AF flood irrigation.",
-    costSrc: "UA La Paz 2024 cotton budget total annual costs $1,713.29 minus $55 × 5.00 AF ($275) = $1,438.29 non-water, including $170 cash rent.",
-    demand: {
-      dir: null,
-      pack: "Upland cotton",
-      tip: "Fiber crop, not a grocery produce item. No advertised-feature series in AMS FVWRETAIL, Nov 6, 2026. No retail demand arrow."
-    }
+    price: 0.733, yield: 1400, af: 5,
+    seed: 96, fert: 142, diesel: 0, labor: 328.36, irrig: 228, other: 1030.09,
+    priceKind: "reference", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced",
+    priceSrc: "NASS agpr1026: U.S. upland cotton prices received, September 2026, $0.733/lb. Arizona monthly price was not in the state table. Lint only — seed is not added. The UA Yuma 2026 budget used $0.82/lb lint and is not used as the current price.",
+    yieldSrc: "UA az2178, January 2026, Yuma County upland cotton budget: 1,400 lb lint/acre (and 2,100 lb seed, not in this lint yield).",
+    waterSrc: "UA az2178, January 2026, Yuma upland cotton: 5.00 AF flood irrigation.",
+    seedSrc: "UA az2178 Yuma 2026 upland cotton, seed costs $96.00/acre.",
+    fertSrc: "UA az2178 Yuma 2026 upland cotton, fertility program $142.00/acre (nitrogen $104, phosphorus $38).",
+    dieselSrc: "UA az2178 does not itemize farm diesel on the cotton table (machinery variable cash is $189.79 and includes fuel at the budget’s $4/gal assumption). Default $0.",
+    laborSrc: "UA az2178 Yuma 2026 cotton: irrigation labor $80.00, additional labor $49.50, PCA $19.80, soil sampling $3.30, custom harvest $160.00, custom hauling $15.76 = $328.36/acre.",
+    irrigSrc: "UA az2178 Yuma 2026 cotton irrigation line $228.00 (flood water $45 × 5.00 AF = $225 plus $3 annual repairs).",
+    otherSrc: "Residual of UA az2178 Yuma 2026 cotton total annual costs $1,824.45 minus seed, fertilizer, labor, and irrigation, covering land preparation, chemicals, assessments, crop insurance $110, cash rent $250, interest, and machinery depreciation. Equals $1,030.09.",
+    demand: { dir: null, tip: "Fiber crop, not a grocery produce item. No FVWRETAIL ad series." }
   },
   {
     id: "durum",
     name: "Durum",
     unit: "bushels/acre",
-    yield: 110,
-    price: 6.30,
-    af: 3.5,
-    other: 1064.43,
     completeness: "partial",
     missing: ["price"],
-    priceKind: "reference",
-    yieldKind: "sourced",
-    waterKind: "sourced",
-    costKind: "sourced",
-    priceSrc: "NASS agpr1026: U.S. all wheat, September 2026, $6.30/bu. Arizona wheat was withheld in the state table. This is not an Arizona durum quote. The UA 2024 durum budget used $8.82/bu and is not used as the current price.",
-    yieldSrc: "UA La Paz 2024 durum wheat budget (az2139, June 2025): 110 bushels/acre.",
-    waterSrc: "UA La Paz 2024 durum wheat budget: 3.50 AF flood irrigation.",
-    costSrc: "UA La Paz 2024 durum wheat total annual costs $1,259.93 minus $55 × 3.50 AF ($195.50) = $1,064.43 non-water, including $170 cash rent.",
-    demand: {
-      dir: null,
-      pack: "Durum wheat",
-      tip: "Grain crop, not a grocery produce item. No advertised-feature series in AMS FVWRETAIL, Nov 6, 2026. No retail demand arrow."
-    }
+    price: 6.3, yield: 120, af: 3,
+    seed: 73.6, fert: 170, diesel: 0, labor: 182.25, irrig: 138, other: 502.09,
+    priceKind: "reference", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced",
+    priceSrc: "NASS agpr1026: U.S. all wheat, September 2026, $6.30/bu. Arizona wheat was withheld in the state table. This is not an Arizona durum quote. The UA Yuma 2026 durum budget used $8.00/bu and is not used as the current price.",
+    yieldSrc: "UA az2178, January 2026, Yuma County durum wheat budget: 120.00 bushels/acre.",
+    waterSrc: "UA az2178, January 2026, Yuma durum wheat: 3.00 AF flood irrigation.",
+    seedSrc: "UA az2178 Yuma 2026 durum wheat, seed costs $73.60/acre.",
+    fertSrc: "UA az2178 Yuma 2026 durum wheat, fertility program $170.00/acre (nitrogen $150, phosphorus $20).",
+    dieselSrc: "UA az2178 does not itemize farm diesel on the durum table (machinery variable cash is $79.44 and includes fuel at the budget’s $4/gal assumption). Default $0.",
+    laborSrc: "UA az2178 Yuma 2026 durum: irrigation labor $48.00, additional labor $33.00, PCA $6.60, soil sampling $1.65, custom harvest $60.00, custom hauling $33.00 = $182.25/acre.",
+    irrigSrc: "UA az2178 Yuma 2026 durum irrigation line $138.00 (flood water $45 × 3.00 AF = $135 plus $3 annual repairs).",
+    otherSrc: "Residual of UA az2178 Yuma 2026 durum total annual costs $1,065.94 minus seed, fertilizer, labor, and irrigation, covering land preparation, chemicals, crop insurance, a $250 cash-rent line, interest, and machinery. Equals $502.09.",
+    demand: { dir: null, tip: "Grain crop, not a grocery produce item. No FVWRETAIL ad series." }
   },
   {
     id: "cantaloupe",
     name: "Cantaloupe",
-    unit: "",
-    yield: 0,
-    price: 0,
-    af: 0,
-    other: 0,
+    unit: "cartons/acre",
     completeness: "partial",
     rankable: false,
-    missing: ["price", "yield", "water", "cost"],
-    priceKind: "missing",
-    yieldKind: "missing",
-    waterKind: "missing",
-    costKind: "missing",
-    priceSrc: "No Western Arizona cantaloupe FOB was on AMS IX_FV120, Nov 10, 2026 (a vegetable shipping-point report). Revenue is not ranked until a shed or contract price, yield, and applied water are entered.",
-    yieldSrc: "No sourced Arizona cantaloupe yield was retrieved this build.",
-    waterSrc: "No sourced Arizona cantaloupe applied-water figure was retrieved this build.",
-    costSrc: "No current Arizona melon enterprise budget was retrieved.",
+    missing: ["price", "cost-year"],
+    price: 0, yield: 811, af: 3.33,
+    seed: 20.06, fert: 180.13, diesel: 25.72, labor: 3481.2, irrig: YCWUA_IRRIG, other: 550.54,
+    priceKind: "missing", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced-2001",
+    priceSrc: "No Western Arizona cantaloupe FOB was on AMS IX_FV120, Nov 10, 2026. Enter a shed or contract price to rank this crop. The 2001 budget price of $6.98/carton is not used as a current FOB.",
+    yieldSrc: "UA AZ1263, 2001–2002, Yuma Valley North spring cantaloupe, Table 8A: 811 cartons/acre.",
+    waterSrc: "UA AZ1263 Table 8D, Yuma Valley North spring cantaloupe: total water applied 40.0 inches = 3.33 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 8A, seed/transplants $20.06/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 8A, fertilizer $180.13/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 8A, diesel fuel $25.72/acre (2001 dollars; Table 8D lists 29.0 gallons).",
+    laborSrc: "UA AZ1263 Table 8A, paid labor $89.20 plus custom harvest/post-harvest $3,392.00 = $3,481.20/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 8A total cash operating expenses $4,226.65 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment. 2001 dollars.",
     demand: {
       dir: "down",
-      natThis: 397,
-      natLast: 1918,
-      natPct: -79,
-      natPrice: 3.70,
-      natPriceLast: 3.22,
-      pack: "Cantaloupes, each",
-      swAds: 146,
-      swPrice: 3.99,
-      season: "off",
-      tip: "National ads 397 vs 1,918 last week (−79%). Advertised wtd $3.70 vs $3.22. Southwest (AZ, CA, NV, UT): 146 ads at $3.99. AMS FVWRETAIL, issued Nov 6, 2026. Typical Arizona desert melon harvest is late spring–summer; mid-November is off-season for local production."
+      tip: "National ads 397 vs 1,918 last week (−79%). Southwest: 146 ads at $3.99. AMS FVWRETAIL, issued Nov 6, 2026."
     }
   },
   {
     id: "honeydew",
     name: "Honeydew",
-    unit: "",
-    yield: 0,
-    price: 0,
-    af: 0,
-    other: 0,
+    unit: "cartons/acre",
     completeness: "partial",
     rankable: false,
-    missing: ["price", "yield", "water", "cost"],
-    priceKind: "missing",
-    yieldKind: "missing",
-    waterKind: "missing",
-    costKind: "missing",
-    priceSrc: "No Western Arizona honeydew FOB was on AMS IX_FV120, Nov 10, 2026. Not ranked.",
-    yieldSrc: "No sourced Arizona honeydew yield was retrieved this build.",
-    waterSrc: "No sourced Arizona honeydew applied-water figure was retrieved this build.",
-    costSrc: "No current Arizona melon enterprise budget was retrieved.",
-    demand: {
-      dir: "flat",
-      natThis: 183,
-      natLast: 183,
-      natPct: 0,
-      natPrice: 3.50,
-      natPriceLast: 3.50,
-      pack: "Honeydews, each",
-      swAds: 0,
-      swNote: "No Southwest honeydew line this week.",
-      season: "off",
-      tip: "National ads 183 vs 183 last week (0%). Advertised $3.50 both weeks. No Southwest honeydew feature line this week. AMS FVWRETAIL, issued Nov 6, 2026."
-    }
+    missing: ["price", "cost-year"],
+    price: 0, yield: 473, af: 3.33,
+    seed: 42.97, fert: 180.13, diesel: 24.12, labor: 1901.2, irrig: YCWUA_IRRIG, other: 668.41,
+    priceKind: "missing", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced-2001",
+    priceSrc: "No Western Arizona honeydew FOB was on AMS IX_FV120, Nov 10, 2026. Enter a shed or contract price to rank this crop.",
+    yieldSrc: "UA AZ1263, 2001–2002, Yuma Valley North spring honeydews, Table 9A: 473 cartons/acre.",
+    waterSrc: "UA AZ1263 Table 9D, Yuma Valley North spring honeydews: total water applied 40.0 inches = 3.33 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 9A, seed/transplants $42.97/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 9A, fertilizer $180.13/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 9A, diesel fuel $24.12/acre (2001 dollars; Table 9D lists 27.2 gallons).",
+    laborSrc: "UA AZ1263 Table 9A, paid labor $89.20 plus custom harvest/post-harvest $1,812.00 = $1,901.20/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 9A total cash operating expenses $2,785.83 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment. 2001 dollars.",
+    demand: { dir: "flat", tip: "National ads 183 vs 183 last week. AMS FVWRETAIL, issued Nov 6, 2026." }
   },
   {
     id: "watermelon",
     name: "Watermelon",
-    unit: "",
-    yield: 0,
-    price: 0,
-    af: 0,
-    other: 0,
+    unit: "tons/acre",
     completeness: "partial",
     rankable: false,
-    missing: ["price", "yield", "water", "cost"],
-    priceKind: "missing",
-    yieldKind: "missing",
-    waterKind: "missing",
-    costKind: "missing",
-    priceSrc: "No Western Arizona watermelon FOB was on AMS IX_FV120, Nov 10, 2026. Not ranked.",
-    yieldSrc: "No sourced Arizona watermelon yield was retrieved this build.",
-    waterSrc: "No sourced Arizona watermelon applied-water figure was retrieved this build.",
-    costSrc: "No current Arizona melon enterprise budget was retrieved.",
+    missing: ["price", "cost-year"],
+    price: 0, yield: 22, af: 4.17,
+    seed: 96.23, fert: 143.6, diesel: 39.58, labor: 1842.42, irrig: YCWUA_IRRIG, other: 663.72,
+    priceKind: "missing", yieldKind: "sourced", waterKind: "sourced", costKind: "sourced-2001",
+    priceSrc: "No Western Arizona watermelon FOB was on AMS IX_FV120, Nov 10, 2026. Enter a shed or contract price to rank this crop. The 2001 budget used $141.60/ton and is not used as a current FOB.",
+    yieldSrc: "UA AZ1263, 2001–2002, Yuma Valley North spring watermelons, Table 11A: 22.0 tons/acre (income quantity 22.05 tons).",
+    waterSrc: "UA AZ1263 Table 11D, Yuma Valley North spring watermelons: total water applied 50.0 inches = 4.17 acre-feet/acre.",
+    seedSrc: "UA AZ1263 Table 11A, seed/transplants $96.23/acre (2001 dollars).",
+    fertSrc: "UA AZ1263 Table 11A, fertilizer $143.60/acre (2001 dollars).",
+    dieselSrc: "UA AZ1263 Table 11A, diesel fuel $39.58/acre (2001 dollars; Table 11D lists 44.7 gallons).",
+    laborSrc: "UA AZ1263 Table 11A, paid labor $128.02 plus custom harvest/post-harvest $1,714.40 = $1,842.42/acre (2001 dollars).",
+    irrigSrc: YCWUA_IRRIG_SRC,
+    otherSrc: "Residual of UA AZ1263 Table 11A total cash operating expenses $2,754.55 minus seed, fertilizer, diesel, and labor, plus the $31/acre water assessment. 2001 dollars.",
     demand: {
       dir: "down",
-      natThis: 31,
-      natLast: 111,
-      natPct: -72,
-      natPrice: 3.98,
-      natPriceLast: 4.71,
-      pack: "Watermelons, red flesh seedless, each",
-      swAds: 61,
-      swPrice: 0.49,
-      swNote: "Southwest had 61 ads for red-flesh watermelon per lb at $0.49 (a different pack than the national each-count used for the arrow).",
-      season: "off",
-      tip: "National ads (each) 31 vs 111 last week (−72%). Advertised wtd $3.98 vs $4.71. Southwest (AZ, CA, NV, UT): 61 ads at $0.49 per lb. AMS FVWRETAIL, issued Nov 6, 2026."
+      tip: "National ads (each) 31 vs 111 last week (−72%). Southwest: 61 ads at $0.49/lb. AMS FVWRETAIL, issued Nov 6, 2026."
     }
   }
 ];
 
-export const PLANT_METHOD = `What should I plant? is a planning estimate, not agronomic, water-rights, or financial advice. Ranked crops use last-known FOB or prices-received times the yield shown, minus either (a) that crop’s sourced or assumed non-water operating total plus the irrigation box, when “By crop” is selected, or (b) the five editable cost boxes, when a cost set is applied or the boxes are edited. Plantable acres = min(farm acres, allotment ÷ AF per acre). Farm profit = net per acre × plantable acres. Net per acre-foot = net per acre ÷ AF per acre. Crops with a $0 price or missing yield or water are listed under demand only and are not ranked. Default farm is 120 acres and 600 AF in Yuma. Irrigation defaults to the YCWUA 2024 O&M assessment of $142.50/acre (includes first 5 AF; ASFMRA 2024). Produce yields of 800 cartons and 2 AF applied water, and produce operating totals of $8,000 (lettuce) and $7,000 (broccoli), are planning assumptions — no 2024–26 Yuma vegetable budget was retrieved. Broccoli yield 600 twenty-pound cartons is converted from NASS Arizona 2024 120 cwt/acre. Alfalfa price is NASS Arizona September 2026 $210/ton; yield 8 tons (UA La Paz 2024); water 6.8 AF (2023 Ottman/Silvertooth mean). Cotton lint price is U.S. $0.733/lb (not Arizona). Durum price is U.S. all wheat $6.30/bu; Arizona wheat was withheld; yield 110 bu and 3.5 AF are from the UA La Paz 2024 durum budget. Demand arrows use national conventional ad counts this week vs last week in AMS FVWRETAIL, issued Friday, November 6, 2026 (ads for Oct 31–Nov 12). Up/down threshold is 15%. Arizona-grocer-specific data was not in the report; Southwest region is AZ, CA, NV, and UT. Import shares are ERS VGS-378, April 2026. Snapshot ${PLANT_AS_OF}.`;
+export function defaultEdits() {
+  return Object.fromEntries(PLANT_CROPS.map((c) => [c.id, {
+    price: c.price, yield: c.yield, af: c.af,
+    seed: c.seed, fert: c.fert, diesel: c.diesel, labor: c.labor, irrig: c.irrig, other: c.other
+  }]));
+}
+
+export const PLANT_METHOD = `What should I plant? is a planning estimate, not agronomic, water-rights, or financial advice. Each crop carries its own editable price, yield, acre-feet per acre, and per-acre costs (seed, fertilizer, diesel, labor/harvest, irrigation, and other). Net per acre = price × yield − the six cost boxes. Plantable acres = min(farm acres, allotment ÷ AF per acre). Farm profit = net per acre × plantable acres. Net per acre-foot = net per acre ÷ AF per acre. Crops with a $0 price are listed under demand only and are not ranked until a price is entered. Vegetable yield, applied water, and component costs are from UA Cooperative Extension AZ1263, 2001–2002 Western Arizona vegetable budgets (Yuma Valley North; Teegerstrom, Palumbo / Yuma Agricultural Center, and Zerkoune). Those dollar costs are 2001 dollars and are not inflated. Broccoli yield 790.4 twenty-pound cartons is 608 twenty-six-pound cartons from that budget, converted to the current AMS 20-lb crown-cut unit (608 × 26 ÷ 20). Vegetable irrigation defaults to the YCWUA 2024 O&M assessment of $142.50/acre (includes first 5 AF; ASFMRA 2024), because the 2001 budgets booked water as a $31/acre ownership assessment with $0 cash water. Alfalfa, upland cotton, and durum yield, water, and component costs are from UA Cooperative Extension az2178, January 2026, Yuma County field-crop production budgets. Current prices are last-known FOB or prices-received (AMS IX_FV120 Nov 10, 2026, or NASS agpr1026, September 2026). Cotton lint and durum use U.S. NASS prices (Arizona monthly cotton was not in the state table; Arizona wheat was withheld). Demand arrows use national conventional ad counts this week vs last week in AMS FVWRETAIL, issued Friday, November 6, 2026 (ads for Oct 31–Nov 12). Up/down threshold is 15%. Arizona-grocer-specific data was not in the report; Southwest region is AZ, CA, NV, and UT. Snapshot ${PLANT_AS_OF}.`;

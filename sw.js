@@ -1,5 +1,5 @@
 /* Offline shell only. Live feeds (NOAA GOES, etc.) are not cached. */
-const CACHE = "agcompass-shell-v5";
+const CACHE = "agcompass-shell-v6";
 const SHELL = [
   "./",
   "./index.html",
