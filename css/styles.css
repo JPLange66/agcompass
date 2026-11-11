@@ -1165,12 +1165,13 @@ html { font-size: 17px; }
 .goes-crop {
   position: absolute;
   width: 193.548%; /* 1200 / 620 of the official SR frame */
-  height: auto;
+  height: 136.364%; /* 1200 / 880 — source frame is square */
+  max-width: none;
+  max-height: none;
   left: 0;
   top: -34.091%; /* 300 / 880 */
   border: 0;
   border-radius: 0;
-  max-height: none;
   min-height: 0;
   object-fit: fill;
   display: block;
