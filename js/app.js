@@ -8,6 +8,8 @@ import { mountYearChart } from "./year-chart.js";
 import { AZ_MAP } from "./az-map.js";
 import { mountPlant } from "./plant.js";
 import { mountGoes } from "./goes.js";
+import { mountReport } from "./report.js";
+import { mountDemo } from "./demo.js";
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "agcompass-state-v3";
@@ -885,6 +887,8 @@ bind();
 mountYearChart($("year-chart"));
 mountPlant($("plant-board"));
 mountGoes(document.querySelector(".goes-card"));
+mountReport();
+mountDemo();
 showView("dashboard");
 // Show mailer code if arriving from a QR/setup link
 const params = new URLSearchParams(location.search);

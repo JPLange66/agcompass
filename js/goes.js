@@ -6,6 +6,7 @@ const BASE = "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR";
 const LATEST = `${BASE}/1200x1200.jpg`;
 const LOOP_GIF = `${BASE}/GOES19-SR-GEOCOLOR-600x600.gif`;
 const SECTOR_PAGE = "https://www.star.nesdis.noaa.gov/GOES/sector.php?sat=G19&sector=sr";
+const LOCAL_STILL = new URL("../assets/goes-az-sonora-fallback.jpg", import.meta.url).href;
 
 const FRAME_COUNT = 24; // 2 hours at 5 minutes
 const FRAME_MS = 180;
@@ -88,12 +89,23 @@ export function mountGoes(root) {
   let playing = !reduced;
   let currentTime = null;
 
-  function setStamp(d, looping) {
+  function setStamp(d, looping, label) {
     currentTime = d;
     if (!stamp) return;
-    const when = formatArizona(d);
-    const mode = looping ? "Loop" : "Latest";
+    const when = label || formatArizona(d);
+    const mode = label ? "Cached" : (looping ? "Loop" : "Latest");
     stamp.innerHTML = `${when} <sup class="plant-src" title="NOAA NESDIS STAR GOES-19 (GOES-East) Southern Rockies GeoColor, cropped on the board to Arizona and Sonora. Official 5-minute frames. ${SECTOR_PAGE}">NOAA</sup><span class="goes-mode">${mode}</span>`;
+  }
+
+  async function showLocalFallback() {
+    try {
+      await loadImage(LOCAL_STILL);
+      show(LOCAL_STILL, null, false);
+      setStamp(null, false, "Cached NOAA frame (offline)");
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   function show(url, time, looping) {
@@ -199,12 +211,28 @@ export function mountGoes(root) {
   img.title = "NOAA NESDIS STAR GOES-19 (GOES-East) Southern Rockies GeoColor. Cropped to Arizona and Sonora. Official 5-minute frames, auto-refreshing.";
 
   (async () => {
-    await loadLatestStill();
+    const still = await loadLatestStill();
     const ok = await loadFrames();
-    if (!ok && !img.src) await fallbackGif();
+    const broken = !img.complete || img.naturalWidth === 0;
+    if (!ok && !still) {
+      const gifOk = await new Promise((resolve) => {
+        const probe = new Image();
+        probe.onload = () => resolve(true);
+        probe.onerror = () => resolve(false);
+        probe.src = `${LOOP_GIF}?t=${Date.now()}`;
+        setTimeout(() => resolve(false), 4000);
+      });
+      if (gifOk) await fallbackGif();
+      else await showLocalFallback();
+    } else if (broken && !ok) {
+      await showLocalFallback();
+    }
     window.setInterval(async () => {
       const ok2 = await loadFrames();
-      if (!ok2) await loadLatestStill();
+      if (!ok2) {
+        const still2 = await loadLatestStill();
+        if (!still2 && (!img.complete || img.naturalWidth === 0)) await showLocalFallback();
+      }
     }, REFRESH_MS);
   })();
 }

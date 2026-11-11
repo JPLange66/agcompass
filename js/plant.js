@@ -17,6 +17,19 @@ const num = (n, d = 0) =>
     ? "—"
     : n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 
+const EDIT_KEYS = ["price", "yield", "af", "seed", "fert", "diesel", "labor", "irrig", "other"];
+const EDIT_LABELS = {
+  price: "Price",
+  yield: "Yield / acre",
+  af: "AF / acre",
+  seed: "Seed",
+  fert: "Fertilizer",
+  diesel: "Diesel",
+  labor: "Labor",
+  irrig: "Irrigation",
+  other: "Other"
+};
+
 function arrow(dir) {
   if (dir === "up") return { glyph: "▲", cls: "up", word: "Up" };
   if (dir === "down") return { glyph: "▼", cls: "down", word: "Down" };
@@ -48,8 +61,8 @@ function inputsOf(e) {
 }
 
 function compute(state) {
-  const acres = Math.max(0, state.acres);
-  const allot = Math.max(0, state.allot);
+  const acres = Math.max(0, Number(state.acres) || 0);
+  const allot = Math.max(0, Number(state.allot) || 0);
   const ranked = [];
   const pending = [];
   for (const c of PLANT_CROPS) {
@@ -79,7 +92,7 @@ function card(row, kind) {
   const label = kind === "best" ? "Best bet" : kind === "runner" ? "Runner-up" : "Avoid";
   const tip = cropTip(row.c);
   return `
-    <article class="plant-card plant-card-${kind}" data-crop="${row.c.id}" title="${String(tip).replace(/"/g, "&quot;")}">
+    <article class="plant-card plant-card-${kind}" data-crop="${row.c.id}" data-kind="${kind}" title="${String(tip).replace(/"/g, "&quot;")}">
       <div class="plant-card-top">
         <span class="plant-badge">${label}</span>
         ${demandBadge(row.d)}
@@ -124,28 +137,111 @@ function fieldVal(n) {
   return String(n);
 }
 
+function cropOf(id) {
+  return PLANT_CROPS.find((c) => c.id === id) || PLANT_CROPS[0];
+}
+
+function isDirtyFor(state, id) {
+  const c = cropOf(id);
+  const e = state.edits[id];
+  if (!e) return false;
+  return EDIT_KEYS.some((k) => Number(e[k]) !== Number(c[k]));
+}
+
+function isSample(state, id, key, value) {
+  const flag = state.sampleFlags?.[id]?.[key];
+  if (flag == null) return false;
+  if (typeof flag === "number") return Number(value) === Number(flag);
+  return String(value) === String(flag);
+}
+
+function collectSampleEdits(state) {
+  const out = [];
+  if (state.sampleFlags?.farmName && state.farmName && isSample(state, "farm", "name", state.farmName)) {
+    out.push({ crop: "", cropId: "", key: "farm", label: "Farm name", value: state.farmName, display: state.farmName });
+  }
+  for (const c of PLANT_CROPS) {
+    const e = state.edits[c.id] || {};
+    for (const k of EDIT_KEYS) {
+      if (isSample(state, c.id, k, e[k])) {
+        const n = Number(e[k]);
+        out.push({
+          crop: c.name,
+          cropId: c.id,
+          key: k,
+          label: EDIT_LABELS[k],
+          value: n,
+          display: k === "yield" || k === "af" ? num(n, 2) : money2(n)
+        });
+      }
+    }
+  }
+  return out;
+}
+
+function snapshotOf(state) {
+  const { ranked, pending, acres, allot } = compute(state);
+  const zone = PLANT_ZONES.find((z) => z.id === state.zone) || PLANT_ZONES[0];
+  const pack = (row) => ({
+    id: row.c.id,
+    name: row.c.name,
+    unit: row.c.unit || "",
+    price: row.e.price,
+    yield: row.e.yield,
+    af: row.e.af,
+    netA: row.netA,
+    netAF: row.netAF,
+    plantable: row.plantable,
+    farm: row.farm,
+    demand: row.d?.dir || "",
+    demandTip: row.d?.tip || "",
+    fmt: {
+      netA: money0(row.netA),
+      netAF: money0(row.netAF),
+      farm: money0(row.farm),
+      plantable: num(row.plantable, 0),
+      price: money2(row.e.price),
+      yield: num(row.e.yield, 2),
+      af: num(row.e.af, 2)
+    }
+  });
+  return {
+    farmName: (state.farmName || "").trim() || "Untitled farm",
+    farmNameRaw: (state.farmName || "").trim(),
+    zoneId: state.zone,
+    zoneName: zone.name,
+    acres,
+    allot,
+    selected: state.selected,
+    ranked: ranked.map(pack),
+    pending: pending.map((p) => ({ id: p.c.id, name: p.c.name, reason: "No AZ FOB" })),
+    sampleEdits: collectSampleEdits(state),
+    asOf: PLANT_AS_OF,
+    demandMeta: `Southwest grocer demand · ${DEMAND_META.issued}`
+  };
+}
+
+let api = null;
+
+export function getPlantApi() {
+  return api;
+}
+
 export function mountPlant(root) {
   if (!root) return;
   const state = {
+    farmName: "",
     zone: "yuma",
     acres: 120,
     allot: 600,
     selected: "iceberg",
     edits: defaultEdits(),
+    sampleFlags: {},
     srcOpen: false
   };
 
-  function cropOf(id) {
-    return PLANT_CROPS.find((c) => c.id === id) || PLANT_CROPS[0];
-  }
-
   function isDirty(id) {
-    const c = cropOf(id);
-    const e = state.edits[id];
-    if (!e) return false;
-    return ["price", "yield", "af", "seed", "fert", "diesel", "labor", "irrig", "other"].some(
-      (k) => Number(e[k]) !== Number(c[k])
-    );
+    return isDirtyFor(state, id);
   }
 
   function render() {
@@ -164,6 +260,7 @@ export function mountPlant(root) {
     const e = state.edits[sel.id];
     const dirty = isDirty(sel.id);
     const anyDirty = PLANT_CROPS.some((c) => isDirty(c.id));
+    const farmSample = isSample(state, "farm", "name", state.farmName);
 
     const cropChips = PLANT_CROPS.map((c) => {
       const pressed = state.selected === c.id;
@@ -177,10 +274,12 @@ export function mountPlant(root) {
       return `<span class="plant-demand-pill ${a.cls}" title="${String(d.tip || "").replace(/"/g, "&quot;")}"><b>${r.c.name}</b> <span class="plant-arrow">${a.glyph}</span> <span class="plant-demand-d">${d.dir ? "Nov 6" : ""}</span></span>`;
     }).join("");
 
-    const field = (key, label, title) =>
-      `<label class="plant-field" title="${String(title || "").replace(/"/g, "&quot;")}">${label}${srcMark(title)}
+    const field = (key, label, title) => {
+      const sample = isSample(state, sel.id, key, e[key]);
+      return `<label class="plant-field" title="${String(title || "").replace(/"/g, "&quot;")}">${label}${srcMark(title)}${sample ? '<span class="sample-tag">sample data</span>' : ""}
          <input id="plant-${key}" type="number" min="0" step="0.01" value="${fieldVal(e[key])}">
        </label>`;
+    };
 
     root.innerHTML = `
       <div class="plant-head">
@@ -188,17 +287,23 @@ export function mountPlant(root) {
           <p class="plant-kicker">Decision board</p>
           <h2>What should I plant?</h2>
         </div>
-        <button type="button" class="yc-src-btn plant-src-btn" aria-expanded="${state.srcOpen}">ⓘ Sources &amp; method</button>
+        <div class="plant-head-actions">
+          <button type="button" class="plant-report-btn" id="plant-report">Decision report</button>
+          <button type="button" class="yc-src-btn plant-src-btn" aria-expanded="${state.srcOpen}">ⓘ Sources &amp; method</button>
+        </div>
       </div>
       <div class="plant-controls">
+        <label class="plant-field">Farm${farmSample ? '<span class="sample-tag">sample data</span>' : ""}
+          <input id="plant-farm" type="text" maxlength="80" autocomplete="off" placeholder="Farm name" value="${String(state.farmName || "").replace(/"/g, "&quot;")}">
+        </label>
         <label class="plant-field">Zone
           <select id="plant-zone">${PLANT_ZONES.map((z) => `<option value="${z.id}" ${z.id === state.zone ? "selected" : ""}>${z.name}</option>`).join("")}</select>
         </label>
         <label class="plant-field">Acres
-          <input id="plant-acres" type="number" min="0" step="1" value="${state.acres}">
+          <input id="plant-acres" type="number" min="0" step="1" value="${state.acres === "" || state.acres == null ? "" : state.acres}">
         </label>
         <label class="plant-field">Allotment
-          <input id="plant-allot" type="number" min="0" step="1" value="${state.allot}"><span class="plant-suffix">AF</span>
+          <input id="plant-allot" type="number" min="0" step="1" value="${state.allot === "" || state.allot == null ? "" : state.allot}"><span class="plant-suffix">AF</span>
         </label>
       </div>
       <div class="plant-costs">
@@ -256,13 +361,16 @@ export function mountPlant(root) {
         }
       });
     };
-    root.querySelector("#plant-zone")?.addEventListener("change", (e) => {
-      state.zone = e.target.value;
+    root.querySelector("#plant-farm")?.addEventListener("input", (ev) => {
+      state.farmName = ev.target.value;
+    });
+    root.querySelector("#plant-zone")?.addEventListener("change", (e2) => {
+      state.zone = e2.target.value;
       render();
     });
     bindNum("#plant-acres", (v) => { state.acres = v; });
     bindNum("#plant-allot", (v) => { state.allot = v; });
-    ["price", "yield", "af", "seed", "fert", "diesel", "labor", "irrig", "other"].forEach((key) => {
+    EDIT_KEYS.forEach((key) => {
       bindNum(`#plant-${key}`, (v) => {
         state.edits[state.selected][key] = v;
       });
@@ -271,6 +379,7 @@ export function mountPlant(root) {
       el.addEventListener("click", () => {
         const id = el.getAttribute("data-crop");
         if (!id) return;
+        if (el.classList.contains("plant-card") || el.classList.contains("plant-row") || el.classList.contains("plant-pending")) return;
         state.selected = id;
         render();
       });
@@ -281,17 +390,62 @@ export function mountPlant(root) {
         price: c.price, yield: c.yield, af: c.af,
         seed: c.seed, fert: c.fert, diesel: c.diesel, labor: c.labor, irrig: c.irrig, other: c.other
       };
+      if (state.sampleFlags[c.id]) delete state.sampleFlags[c.id];
       render();
     });
     root.querySelector("#plant-reset-all")?.addEventListener("click", () => {
       state.edits = defaultEdits();
+      state.sampleFlags = {};
       render();
     });
     root.querySelector(".plant-src-btn")?.addEventListener("click", () => {
       state.srcOpen = !state.srcOpen;
       render();
     });
+    root.querySelector("#plant-report")?.addEventListener("click", () => {
+      root.dispatchEvent(new CustomEvent("agcompass:report", { bubbles: true, detail: snapshotOf(state) }));
+    });
   }
+
+  api = {
+    root,
+    snapshot() { return snapshotOf(state); },
+    getState() { return state; },
+    setFarmName(name) { state.farmName = name; const el = root.querySelector("#plant-farm"); if (el) el.value = name; },
+    setZone(id) { state.zone = id; render(); },
+    setAcres(n) { state.acres = n; render(); },
+    setAllot(n) { state.allot = n; render(); },
+    selectCrop(id) { state.selected = id; render(); },
+    setEdit(key, val) { state.edits[state.selected][key] = val; render(); },
+    markSample(scope, key, value) {
+      if (!state.sampleFlags[scope]) state.sampleFlags[scope] = {};
+      state.sampleFlags[scope][key] = value;
+      render();
+    },
+    resetForDemo() {
+      state.farmName = "";
+      state.zone = "yuma";
+      state.acres = "";
+      state.allot = "";
+      state.selected = "iceberg";
+      state.edits = defaultEdits();
+      state.sampleFlags = {};
+      state.srcOpen = false;
+      render();
+    },
+    highlight(kind) {
+      root.querySelectorAll(".plant-card").forEach((c) => c.classList.remove("demo-spotlight"));
+      const el = root.querySelector(`.plant-card-${kind}`) || root.querySelector(`[data-kind="${kind}"]`);
+      if (el) {
+        el.classList.add("demo-spotlight");
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    },
+    clearHighlight() {
+      root.querySelectorAll(".plant-card").forEach((c) => c.classList.remove("demo-spotlight"));
+    },
+    render
+  };
 
   render();
 }
