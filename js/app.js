@@ -4,6 +4,7 @@ import {
   GOES, AZMET_SNAPSHOT, MAILER, DAIRY, CATTLE, REFERENCE, PRODUCE_CARDS,
   BORDER_LINES, BORDER_NOTE, ZONES, PURPOSE,
 } from "./data.js";
+import { mountYearChart } from "./year-chart.js";
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "agcompass-state-v3";
@@ -808,6 +809,7 @@ function bind() {
 }
 
 bind();
+mountYearChart($("year-chart"));
 showView("dashboard");
 // Show mailer code if arriving from a QR/setup link
 const params = new URLSearchParams(location.search);
