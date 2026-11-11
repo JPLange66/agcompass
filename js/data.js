@@ -15,10 +15,12 @@ export const PURPOSE = "Arizona’s market board for what Chicago doesn’t trad
 export const SECONDARY = "The farmer’s decision destination for the best path to profitability. Most of what Arizona grows is not discovered on the CME.";
 
 export const GOES = {
-  psw1200: "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg",
-  pswFull: "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/latest.jpg",
-  sp19_1200: "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sp/GEOCOLOR/1200x1200.jpg",
-  note: "Public NESDIS rolling latest. Confirmed reachable Nov 10, 2026, Arizona time: GOES-18 Pacific Southwest 1200x1200 and latest.jpg; GOES-19 Southwest 1200x1200. The GOES-18 sector path “sp” returned 404. Regional picture, not a field-level forecast.",
+  sr1200: "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR/1200x1200.jpg",
+  srLatest: "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR/latest.jpg",
+  srLoop: "https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR/GOES19-SR-GEOCOLOR-600x600.gif",
+  srPage: "https://www.star.nesdis.noaa.gov/GOES/sector.php?sat=G19&sector=sr",
+  crop: "Official GOES-19 Southern Rockies 1200×1200 GeoColor is cropped on the board to the Arizona + Sonora portion of that fixed sector (pixel window 0,300–620,1180 on the 1200 frame). Not the Pacific Southwest California/Nevada sector.",
+  note: "NOAA NESDIS STAR GOES-19 (GOES-East) Southern Rockies GeoColor, official 5-minute frames. The board auto-refreshes and plays a 2-hour loop, cropped to Arizona and Sonora. Timestamp is the frame’s UTC scan time converted to America/Phoenix.",
 };
 
 export const AZMET_SNAPSHOT = {
@@ -421,7 +423,7 @@ export const SOURCES = [
   { title: "USDA AMS National Retail Report — Fruits and Vegetables (FVWRETAIL)", detail: "Issued Friday, November 6, 2026, ads for October 31–November 12, 2026. National conventional ad counts this week vs last week set the demand arrow (up/down at ±15%, else flat). Southwest U.S. in the report is Arizona, California, Nevada, and Utah — not Arizona-grocer-specific. Southwest this week: romaine 3-count 191 ads at $4.99; cantaloupe each 146 ads at $3.99; watermelon red flesh per lb 61 ads at $0.49; no Southwest iceberg or broccoli conventional feature ads. National: iceberg each 241 vs 365; romaine hearts 3-count 613 vs 1,033; broccoli crown cut per lb 1,640 vs 1,155; cantaloupes each 397 vs 1,918; honeydews each 183 vs 183; watermelons seedless each 31 vs 111. https://www.ams.usda.gov/mnreports/fvwretail.pdf" },
   { title: "Ottman / Silvertooth forage water assessment", detail: "2023 dairy-forage survey means: alfalfa 6.8 AF, corn silage 4.9 AF, silage yield 30.32 tons/acre." },
   { title: "University of Arizona AZMET, Yuma Valley (az02)", detail: "Daily weather, soil, and rain through Nov 9, 2026 (snapshot). https://azmet.arizona.edu/past-data/station-level-summaries/az02/daily" },
-  { title: "NOAA NESDIS GOES-18 Pacific Southwest GeoColor", detail: "Embedded public image. https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg — full latest.jpg also confirmed. GOES-19 Southwest 1200x1200 also resolves." },
+  { title: "NOAA NESDIS GOES-19 Southern Rockies GeoColor (Arizona & Sonora)", detail: "GOES-East (GOES-19) official 5-minute GeoColor frames and rolling loop, Southern Rockies sector. The board crops that fixed sector to Arizona and Sonora (pixel window 0,300–620,1180 on the 1200×1200 frame), not the Pacific Southwest California/Nevada view used earlier. Latest still: https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR/1200x1200.jpg — loop: https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR/GOES19-SR-GEOCOLOR-600x600.gif — sector page: https://www.star.nesdis.noaa.gov/GOES/sector.php?sat=G19&sector=sr. Frame timestamps are UTC scan times converted to America/Phoenix. Auto-refreshes about every five minutes." },
   { title: "UA Cooperative Extension county agricultural profiles", detail: "16,710 Arizona farms, 1,221,799 cropland acres, 99% irrigated, about 75% of state water use." },
   { title: "Wellton-Mohawk Irrigation & Drainage District", detail: "https://www.wmidd.org/irrigation.html" },
   { title: "Farm Credit, Arizona at a glance (Dec. 31, 2024)", detail: "Cited in the Institutional Financing PDF: 1,127 Arizona customers, $3.4 billion loan volume, $25.6 million patronage. Not an endorsement." },

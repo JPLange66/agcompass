@@ -152,10 +152,16 @@
           <div class="zone-pills" id="zone-pills"></div>
           <p class="s" id="zone-blurb"></p>
         </div>
-        <div class="kpi">
-          <div class="k">GOES-18</div>
-          <img id="cab-goes" class="goes" src="https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg" alt="NOAA GOES-18 Pacific Southwest GeoColor, public NESDIS rolling latest" title="NOAA NESDIS GOES-18 Pacific Southwest GeoColor. Updates on reload.">
-          <p class="s">Nov 11, 2026 <sup class="plant-src" title="NOAA NESDIS GOES-18 Pacific Southwest GeoColor, public rolling latest.">NOAA</sup></p>
+        <div class="kpi goes-card">
+          <div class="goes-card-head">
+            <div class="k">GOES-East · Arizona &amp; Sonora</div>
+            <button type="button" class="goes-toggle" id="goes-toggle" aria-pressed="true">Pause</button>
+          </div>
+          <div class="goes-viewport">
+            <img id="cab-goes" class="goes-crop" src="https://cdn.star.nesdis.noaa.gov/GOES19/ABI/SECTOR/sr/GEOCOLOR/1200x1200.jpg" alt="NOAA GOES-19 Southern Rockies GeoColor, cropped to Arizona and Sonora, Mexico" title="NOAA NESDIS STAR GOES-19 (GOES-East) Southern Rockies GeoColor. Cropped to Arizona and Sonora. Official 5-minute frames, auto-refreshing.">
+            <span class="goes-live">Live</span>
+          </div>
+          <p class="s" id="goes-stamp">NOAA NESDIS <sup class="plant-src" title="NOAA NESDIS STAR GOES-19 Southern Rockies GeoColor, cropped to Arizona and Sonora.">NOAA</sup></p>
         </div>
       </div>
       <p class="muted cab-disclaimer">Snapshot Nov 11, 2026, Arizona time. Planning estimate, not advice.</p>

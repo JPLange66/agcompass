@@ -1,12 +1,13 @@
 import {
   BUILD, DIESEL, FERTILIZER, DISTRICTS, CROPS, DEMO_FARM, INPUTS,
   CONTEXT_STATS, IMPORT_REALITY, SPONSOR_TIERS, FORECAST, SOURCES,
-  GOES, AZMET_SNAPSHOT, MAILER, DAIRY, CATTLE, REFERENCE, PRODUCE_CARDS,
+  AZMET_SNAPSHOT, MAILER, DAIRY, CATTLE, REFERENCE, PRODUCE_CARDS,
   BORDER_LINES, BORDER_NOTE, ZONES, PURPOSE,
 } from "./data.js";
 import { mountYearChart } from "./year-chart.js";
 import { AZ_MAP } from "./az-map.js";
 import { mountPlant } from "./plant.js";
+import { mountGoes } from "./goes.js";
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "agcompass-state-v3";
@@ -277,18 +278,6 @@ function renderCab() {
     over.innerHTML = `<strong>This plan is over the cap.</strong> Planted acres are ${num(sum.planted, 1)} of ${num(sum.farmAcres, 1)} farm acres. Planned water is ${num(sum.waterUsed, 1)} AF of a ${num(sum.allocation, 1)} AF allocation. Cut acres or shift to lower-water crops before treating this as a decision.`;
   } else {
     over.hidden = true;
-  }
-  const img = $("cab-goes");
-  if (img && !img.dataset.bound) {
-    img.dataset.bound = "1";
-    img.addEventListener("error", () => {
-      if (img.dataset.fallback === "done") {
-        img.replaceWith(Object.assign(document.createElement("p"), { className: "muted", textContent: "Satellite image could not be loaded. Use the NESDIS links on the Sources tab." }));
-        return;
-      }
-      img.dataset.fallback = "done";
-      img.src = GOES.sp19_1200;
-    });
   }
 }
 
@@ -895,6 +884,7 @@ function bind() {
 bind();
 mountYearChart($("year-chart"));
 mountPlant($("plant-board"));
+mountGoes(document.querySelector(".goes-card"));
 showView("dashboard");
 // Show mailer code if arriving from a QR/setup link
 const params = new URLSearchParams(location.search);

@@ -1,5 +1,5 @@
 /* Offline shell only. Live feeds (NOAA GOES, etc.) are not cached. */
-const CACHE = "agcompass-shell-v6";
+const CACHE = "agcompass-shell-v7";
 const SHELL = [
   "./",
   "./index.html",
@@ -11,6 +11,7 @@ const SHELL = [
   "./js/year-chart-data.js",
   "./js/az-map.js",
   "./js/plant.js",
+  "./js/goes.js",
   "./js/plant-data.js",
   "./assets/ag_compass_logo_copper.png",
   "./manifest.webmanifest",
