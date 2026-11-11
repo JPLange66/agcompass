@@ -32,7 +32,8 @@ function srcMark(title) {
 function demandBadge(d) {
   if (!d) return "";
   const a = arrow(d.dir);
-  return `<span class="plant-demand ${a.cls}" title="${String(d.tip || "").replace(/"/g, "&quot;")}"><span class="plant-arrow">${a.glyph}</span><span class="plant-demand-d">Nov 6</span></span>`;
+  const date = d.dir ? `<span class="plant-demand-d">Nov 6</span>` : "";
+  return `<span class="plant-demand ${a.cls}" title="${String(d.tip || "").replace(/"/g, "&quot;")}"><span class="plant-arrow">${a.glyph}</span>${date}</span>`;
 }
 
 function compute(state) {
