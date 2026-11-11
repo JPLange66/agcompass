@@ -191,7 +191,7 @@ export function mountYearChart(root) {
       <div class="yc-head">
         <div>
           <div class="yc-kicker">52-week benchmark chart · ${YEAR_CHART.metricShort}</div>
-          <h2>Gross dollars per acre-foot, measured against alfalfa</h2>
+          <h2>Gross $ / acre-foot</h2>
         </div>
         <div class="yc-tools">
           <div class="yc-scale" role="group" aria-label="Chart scale">
@@ -237,12 +237,11 @@ export function mountYearChart(root) {
             return `
           <button type="button" class="yc-pill" data-id="${s.id}" aria-pressed="${on[s.id] ? "true" : "false"}">
             <span class="swatch" style="background:${pal.line}; ${s.style === "dashed" ? "box-shadow: inset 0 0 0 2px #0b1018; outline: 1px dashed " + pal.line : ""}"></span>
-            ${s.name}${s.kind === "estimate" ? " <em>last-known / estimate</em>" : ""}
+            ${s.name}
           </button>`;
           })
           .join("")}
       </div>
-      <p class="yc-inline">NASS monthly prices received, stepped by week · alfalfa is the copper benchmark · dashed = last-known / estimate after the last published month</p>
       <div class="yc-drawer" ${sourcesOpen ? "" : "hidden"}>
         <p>${srcBody}</p>
       </div>

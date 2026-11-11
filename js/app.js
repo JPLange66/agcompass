@@ -6,6 +6,7 @@ import {
 } from "./data.js";
 import { mountYearChart } from "./year-chart.js";
 import { AZ_MAP } from "./az-map.js";
+import { mountPlant } from "./plant.js";
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "agcompass-state-v3";
@@ -403,10 +404,10 @@ function renderCommand() {
   const kpi = $("kpi-grid");
   if (kpi) {
     kpi.innerHTML = `
-      <div class="kpi"><div class="k">Class III milk</div><div class="v">$${DAIRY.classIII.value.toFixed(2)}</div>${spark(DAIRY.classIIISpark, "#A97F5B")}<div class="s">${DAIRY.classIII.month} · ${DAIRY.classIII.change < 0 ? "" : "+"}$${DAIRY.classIII.change.toFixed(2)} · ${DAIRY.classIII.source}</div></div>
-      <div class="kpi"><div class="k">Class IV milk</div><div class="v">$${DAIRY.classIV.value.toFixed(2)}</div>${spark(DAIRY.classIVSpark, "#ECDEC8")}<div class="s">${DAIRY.classIV.month} · +$${DAIRY.classIV.change.toFixed(2)} · AMS CLS-1026</div></div>
-      <div class="kpi"><div class="k">AZ Order 131 Class I</div><div class="v">$${DAIRY.azOrder131.novClassI.toFixed(2)}</div><div class="s">November announced · Oct was $${DAIRY.azOrder131.octClassI.toFixed(2)} · differential $${DAIRY.azOrder131.differential.toFixed(2)} · ${DAIRY.azOrder131.source}</div></div>
-      <div class="kpi"><div class="k">Profit per acre-foot</div><div class="v">${sum.profitAf == null ? "—" : money(sum.profitAf, 0)}</div><div class="s">From the current zone plan · per acre ${sum.profitAc == null ? "—" : money(sum.profitAc, 0)} · ${num(sum.planted, 0)} ac planted</div></div>
+      <div class="kpi" title="${DAIRY.classIII.source}"><div class="k">Class III</div><div class="v">$${DAIRY.classIII.value.toFixed(2)}</div>${spark(DAIRY.classIIISpark, "#A97F5B")}<div class="s">/cwt · ${DAIRY.classIII.month}</div></div>
+      <div class="kpi" title="AMS CLS-1026, Nov 4, 2026"><div class="k">Class IV</div><div class="v">$${DAIRY.classIV.value.toFixed(2)}</div>${spark(DAIRY.classIVSpark, "#ECDEC8")}<div class="s">/cwt · ${DAIRY.classIV.month}</div></div>
+      <div class="kpi" title="${DAIRY.azOrder131.source}"><div class="k">Class I</div><div class="v">$${DAIRY.azOrder131.novClassI.toFixed(2)}</div><div class="s">/cwt · Nov 2026</div></div>
+      <div class="kpi"><div class="k">Profit / AF</div><div class="v">${sum.profitAf == null ? "—" : money(sum.profitAf, 0)}</div><div class="s">${sum.profitAc == null ? "—" : money(sum.profitAc, 0)} / ac · ${num(sum.planted, 0)} ac</div></div>
     `;
   }
   const map = $("az-map");
@@ -436,7 +437,8 @@ function renderCommand() {
   }
   const mapSrc = $("map-source");
   if (mapSrc) {
-    mapSrc.textContent = "County outlines: U.S. Census TIGER cartographic boundaries (public domain, FIPS 04xxx, via us-atlas). Gila is shown with Pinal; Greenlee with Graham / Safford. Click a county to load that zone.";
+    mapSrc.textContent = "TIGER · FIPS 04xxx";
+    mapSrc.title = "U.S. Census TIGER cartographic boundaries (public domain, FIPS 04xxx, via us-atlas). Gila is shown with Pinal; Greenlee with Graham / Safford.";
   }
   const pills = $("zone-pills");
   if (pills) {
@@ -453,7 +455,7 @@ function renderCommand() {
   }
   const blurb = $("zone-blurb");
   const z = ZONES.find((x) => x.id === state.zoneId) || ZONES[0];
-  if (blurb) blurb.textContent = z.blurb;
+  if (blurb) { blurb.textContent = z.name; blurb.title = z.blurb || ""; }
 }
 
 function applyZone(id) {
@@ -892,6 +894,7 @@ function bind() {
 
 bind();
 mountYearChart($("year-chart"));
+mountPlant($("plant-board"));
 showView("dashboard");
 // Show mailer code if arriving from a QR/setup link
 const params = new URLSearchParams(location.search);

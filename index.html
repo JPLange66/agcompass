@@ -97,45 +97,47 @@
       <p class="hero-kicker">Ag Compass · Arizona · the Copper State</p>
       <h1 class="hero-headline">Arizona’s market board for what Chicago doesn’t trade</h1>
       <p class="hero-tag">Leave the drought to nature, not your bank account.</p>
-      <p class="hero-sub">Most of what Arizona grows is discovered in AMS shipping-point reports, hay prices received, the Federal Milk Marketing Order, and regional cattle sales — not on the CME. Cotton and wheat appear only as reference points. AMS issued no specialty-crop reports on Nov 11 (Veterans Day).</p>
       <div class="stat-strip" aria-label="Last-known market snapshot, dated and sourced">
         <div class="stat-live"><span class="pulse" aria-hidden="true"></span> Last known · November 11, 2026 · Arizona time</div>
         <div class="stat-grid">
-          <div class="stat-tile">
-            <div class="stat-k">AZ Class I · Order 131</div>
+          <div class="stat-tile" title="DMN Report 45, week of Nov 2–6, 2026. Arizona Order 131, Phoenix. November announced Class I.">
+            <div class="stat-k">Class I <sup class="plant-src">DMN</sup></div>
             <div class="stat-v">$22.87</div>
-            <div class="stat-u">per cwt · November announced</div>
-            <div class="stat-s">DMN Report 45</div>
+            <div class="stat-u">/cwt</div>
+            <div class="stat-d">Nov 2026</div>
           </div>
-          <div class="stat-tile">
-            <div class="stat-k">Western AZ iceberg 24s</div>
+          <div class="stat-tile" title="AMS IX_FV120, Nov 10, 2026. Western Arizona iceberg film-wrapped 24s, mostly $27.75–$30.75.">
+            <div class="stat-k">Iceberg 24s <sup class="plant-src">AMS</sup></div>
             <div class="stat-v">$27.75–$30.75</div>
-            <div class="stat-u">mostly, film-wrapped · Nov 10</div>
-            <div class="stat-s">AMS IX_FV120</div>
+            <div class="stat-u">/carton</div>
+            <div class="stat-d">Nov 10</div>
           </div>
-          <div class="stat-tile">
-            <div class="stat-k">Arizona alfalfa</div>
+          <div class="stat-tile" title="NASS agpr1026, released Oct 30, 2026. Arizona alfalfa hay, prices received, September 2026, $210/ton.">
+            <div class="stat-k">Alfalfa <sup class="plant-src">NASS</sup></div>
             <div class="stat-v">$210</div>
-            <div class="stat-u">per ton · prices received, Sept</div>
-            <div class="stat-s">NASS agpr1026</div>
+            <div class="stat-u">/ton</div>
+            <div class="stat-d">Sept 2026</div>
           </div>
-          <div class="stat-tile">
-            <div class="stat-k">SW steers · 750 lb FOB</div>
+          <div class="stat-tile" title="AMS_2940, Southwest Direct Cattle (AZ/CA/NV), week ending Oct 30, 2026. Medium/Large 1-2 steers FOB 750 lb.">
+            <div class="stat-k">Steers 750 lb <sup class="plant-src">AMS</sup></div>
             <div class="stat-v">$342.66</div>
-            <div class="stat-u">per cwt · week ending Oct 30</div>
-            <div class="stat-s">AMS_2940 AZ/CA/NV</div>
+            <div class="stat-u">/cwt</div>
+            <div class="stat-d">Oct 30</div>
           </div>
-          <div class="stat-tile">
-            <div class="stat-k">Arizona all-milk</div>
+          <div class="stat-tile" title="NASS agpr1026, released Oct 30, 2026. Arizona all-milk, September 2026, $19.00/cwt, fat 4.03%.">
+            <div class="stat-k">All-milk <sup class="plant-src">NASS</sup></div>
             <div class="stat-v">$19.00</div>
-            <div class="stat-u">per cwt · September 2026</div>
-            <div class="stat-s">NASS agpr1026 · fat 4.03%</div>
+            <div class="stat-u">/cwt</div>
+            <div class="stat-d">Sept 2026</div>
           </div>
         </div>
       </div>
     </div>
     <div class="ticker" aria-label="Last-known price ticker">
       <div class="ticker-track" id="ticker-track"></div>
+    </div>
+    <div class="wrap">
+      <section class="plant-board" id="plant-board" aria-label="What should I plant?"></section>
     </div>
     <div class="hero-year">
       <div class="wrap" id="year-chart"></div>
@@ -151,12 +153,12 @@
           <p class="s" id="zone-blurb"></p>
         </div>
         <div class="kpi">
-          <div class="k">Cab screen · GOES-18 Pacific Southwest</div>
-          <img id="cab-goes" class="goes" src="https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg" alt="NOAA GOES-18 Pacific Southwest GeoColor, public NESDIS rolling latest">
-          <p class="s">Regional satellite picture, not a field forecast. Updates when this page is reloaded. The compass is polished copper — Arizona is the Copper State. The official bronze source mark is unchanged on file; this board uses the copper rendering.</p>
+          <div class="k">GOES-18</div>
+          <img id="cab-goes" class="goes" src="https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/psw/GEOCOLOR/1200x1200.jpg" alt="NOAA GOES-18 Pacific Southwest GeoColor, public NESDIS rolling latest" title="NOAA NESDIS GOES-18 Pacific Southwest GeoColor. Updates on reload.">
+          <p class="s">Nov 11, 2026 <sup class="plant-src" title="NOAA NESDIS GOES-18 Pacific Southwest GeoColor, public rolling latest.">NOAA</sup></p>
         </div>
       </div>
-      <p class="muted cab-disclaimer">Most of what Arizona grows is discovered in AMS shipping-point reports, hay prices received, the Federal Milk Marketing Order, and regional cattle sales — not on the CME. Cotton and wheat appear only as reference points. Snapshot Nov 11, 2026, Arizona time. AMS issued no specialty-crop reports on Nov 11 (Veterans Day). This site does not collect a password or a payment. Mentions of AgWest, USDA, CAP, or the University of Arizona are not endorsements.</p>
+      <p class="muted cab-disclaimer">Snapshot Nov 11, 2026, Arizona time. Planning estimate, not advice.</p>
       <p class="install-note no-print">On an iPhone: open this page in Safari, tap Share, then <strong>Add to Home Screen</strong>. The icon is the Ag Compass compass rose.</p>
     </div>
   </section>
@@ -164,7 +166,7 @@
   <main class="wrap">
     <div class="section-head no-print">
       <div>
-        <p class="lede" style="margin:0">University of Arizona review demo. A Yuma iceberg lettuce, carrot, and tomato plan is loaded so the board has something to show. It is not a real farm and not a university endorsement. Print a clean farmer report or a lender worksheet, or reset the labeled demo farm. This site does not collect a password or a payment.</p>
+        <p class="lede" style="margin:0">UA review demo. Not a real farm.</p>
       <p class="install-note no-print">On an iPhone: open this page in Safari, tap the Share button, then <strong>Add to Home Screen</strong> — the same way as Langenator. The icon is the Ag Compass logo. This is a mobile web app, not an App Store download.</p>
       </div>
       <div>
@@ -175,26 +177,24 @@
     </div>
 
     <section id="view-dashboard" class="view active">
-      <h2>Local discovery — not a CME board</h2>
-      <p class="lede">Last-known prices with report IDs and dates. Midpoints are labels only. No price is invented. Melons, citrus, dates and pecans did not appear as Arizona shipping-point quotes on IX_FV120 (a vegetable report) this build.</p>
+      <h2>Last known</h2>
       <div id="market-cards" class="market-grid"></div>
       <h3>Dairy sector</h3>
       <div id="dairy-box"></div>
       <h3>Border crossings — selected verified lines</h3>
-      <p class="muted">USDA AMS FVDDAILY_MOV, Nov 10, 2026, Mexico crossings through Nogales and San Luis, in 40,000-lb units. Only Mexico-origin lines that could be cleanly matched to a commodity heading are shown. This is not a complete port total. Mailer click tracking is left for later.</p>
+      <p class="muted">FVDDAILY_MOV · Nov 10, 2026 · 40,000-lb units</p>
       <div id="border-cards" class="market-grid"></div>
       <div id="context-cards" class="cards"></div>
       <div class="weather-row">
         <div id="diesel-readout"></div>
-        <p class="muted">The cab screen above is NOAA GOES-18 Pacific Southwest GeoColor (NESDIS public rolling latest, 1200×1200). It updates when you reload. If it fails, the page tries the GOES-19 Southwest image, which also resolved on Nov 10, 2026, Arizona time. It is a regional satellite picture, not a field-level forecast.</p>
+        <p class="muted">GOES-18 · NOAA NESDIS</p>
       </div>
       <h3>Grocery demand and Mexico imports</h3>
       <div id="import-box"></div>
     </section>
 
     <section id="view-plan" class="view">
-      <h2>Irrigation district, crop plan, and acre-foot calculator</h2>
-      <p class="lede">Selecting a district loads its published 2024 assessment and included allotment. Both are editable. The allocation caps the crop plan. Pick an Arizona zone on the map. Yuma is one zone among many. A labeled starting mix loads for that zone; every figure is editable. Add alfalfa, cotton, feed corn, or sorghum to compare water-intensive field crops against higher-value produce.</p>
+      <h2>Farm plan</h2>
       <div class="form-grid">
         <label class="field">Farm / plan name<input id="farm-name" type="text"></label>
         <label class="field">Arizona irrigation district<select id="district-select"></select></label>
@@ -221,7 +221,6 @@
 
     <section id="view-opportunity" class="view">
       <h2>Opportunity cards</h2>
-      <p class="lede">Price context, import share, season, and profit per acre-foot from the current plan. Cards are decision prompts, not planting recommendations.</p>
       <div id="opp-cards" class="opp"></div>
       <h3>Import share — what the sources actually say</h3>
       <div id="import-box-cards"></div>
