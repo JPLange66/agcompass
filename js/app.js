@@ -5,6 +5,7 @@ import {
   BORDER_LINES, BORDER_NOTE, ZONES, PURPOSE,
 } from "./data.js";
 import { mountYearChart } from "./year-chart.js";
+import { AZ_MAP } from "./az-map.js";
 
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "agcompass-state-v3";
@@ -329,6 +330,73 @@ function renderTicker() {
   el.innerHTML = html + html;
 }
 
+
+const ZONE_PAINT = {
+  yuma:     { mid: "#C4783A", on: "#F0A060", dim: "#5A3A24", hover: "#E8956B" },
+  lapaz:    { mid: "#D99060", on: "#F4C2A1", dim: "#5C3F30", hover: "#E8A888" },
+  maricopa: { mid: "#2A9B8C", on: "#4FE0CC", dim: "#1A3F3C", hover: "#3EC8B8" },
+  pinal:    { mid: "#3AAF9A", on: "#6BE8D0", dim: "#1B433C", hover: "#4FD0BA" },
+  cochise:  { mid: "#C48A4A", on: "#E8B56A", dim: "#4A3520", hover: "#D4A05A" },
+  graham:   { mid: "#A66B3C", on: "#D08A50", dim: "#3E2A1C", hover: "#C07A48" },
+  nogales:  { mid: "#2F8F7A", on: "#5FD0B4", dim: "#17382F", hover: "#45B89A" },
+  pima:     { mid: "#3A7A78", on: "#5EB8B4", dim: "#1A3334", hover: "#4A9E9A" },
+  mohave:   { mid: "#C07048", on: "#E89868", dim: "#4A2E22", hover: "#D4885C" },
+  north:    { mid: "#3A5E7A", on: "#6AA0C4", dim: "#1C2E3C", hover: "#5688A8" }
+};
+
+let mapHover = null;
+
+function paintCounty(zoneId, selected, hoverZone) {
+  const p = ZONE_PAINT[zoneId] || ZONE_PAINT.north;
+  if (hoverZone && hoverZone === zoneId && selected !== zoneId) return p.hover;
+  if (selected === "az") return p.mid;
+  if (selected === zoneId) return p.on;
+  return p.dim;
+}
+
+function drawAzMap(svg, selected) {
+  if (!svg) return;
+  const counties = AZ_MAP.counties.map((c) => {
+    const fill = paintCounty(c.zone, selected, mapHover);
+    const on = selected === c.zone || (mapHover === c.zone && selected !== "az");
+    const stroke = on ? "#F4C2A1" : "rgba(236,222,200,0.55)";
+    const sw = on ? 2.6 : 1.1;
+    const glow = on ? 'filter="url(#azGlow)"' : "";
+    return `<path class="az-county" data-zone="${c.zone}" data-name="${c.name}" d="${c.d}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round" ${glow}><title>${c.name}</title></path>`;
+  }).join("");
+  const labels = AZ_MAP.counties.map((c) => {
+    const small = ["Santa Cruz", "Greenlee", "La Paz", "Yuma"].includes(c.name);
+    const active = selected === c.zone || selected === "az" || mapHover === c.zone;
+    const fill = active ? "#F4EDE0" : "rgba(244,237,224,0.72)";
+    const fs = small ? 13 : 15;
+    const weight = (selected === c.zone) ? 700 : 600;
+    return `<text class="az-label" x="${c.lx}" y="${c.ly}" text-anchor="middle" fill="${fill}" font-size="${fs}" font-weight="${weight}" stroke="#070b12" stroke-width="4" paint-order="stroke fill">${c.name}</text>`;
+  }).join("");
+  const n = AZ_MAP.neighbors;
+  const neighbors = `
+    <text x="${n.utah.x}" y="${n.utah.y}" text-anchor="middle" fill="#E8956B" font-size="13" letter-spacing="2" font-weight="700">${n.utah.label}</text>
+    <text x="${n.nm.x}" y="${n.nm.y}" text-anchor="end" fill="#E8956B" font-size="13" letter-spacing="2" font-weight="700">${n.nm.label}</text>
+    <text x="${n.west.x}" y="${n.west.y}" text-anchor="start" fill="#E8956B" font-size="12" letter-spacing="1" font-weight="700">${n.west.label}</text>
+    <text x="${n.mexico.x}" y="${n.mexico.y}" text-anchor="middle" fill="#E8956B" font-size="13" letter-spacing="2" font-weight="700">${n.mexico.label}</text>`;
+  svg.innerHTML = `
+    <defs>
+      <radialGradient id="azBg" cx="50%" cy="38%" r="70%">
+        <stop offset="0%" stop-color="#1c314c"/>
+        <stop offset="100%" stop-color="#070b12"/>
+      </radialGradient>
+      <filter id="azGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3.2" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <rect x="0" y="0" width="640" height="760" fill="url(#azBg)" rx="16"/>
+    ${counties}
+    <path d="${AZ_MAP.state}" fill="none" stroke="#F4C2A1" stroke-width="3.2" stroke-linejoin="round" opacity="0.95"/>
+    ${labels}
+    ${neighbors}
+  `;
+}
+
 function renderCommand() {
   renderTicker();
   const sum = planSummary();
@@ -342,20 +410,34 @@ function renderCommand() {
     `;
   }
   const map = $("az-map");
-  if (map && !map.dataset.drawn) {
-    map.dataset.drawn = "1";
-    const base = `<path d="M 20 18 L 168 18 L 200 118 L 188 214 L 28 218 L 12 140 L 20 80 Z" fill="#182840" stroke="#A97F5B" stroke-width="2"/>`;
-    map.innerHTML = base + ZONES.filter(z => z.id !== "az").map((z) =>
-      `<path data-zone="${z.id}" d="${z.path}" fill="rgba(169,127,91,0.18)" stroke="#ECDEC8" stroke-width="1" style="cursor:pointer"><title>${z.name}</title></path>`
-    ).join("");
-    map.addEventListener("click", (e) => {
-      const path = e.target.closest("[data-zone]");
-      if (path) applyZone(path.getAttribute("data-zone"));
-    });
+  if (map) {
+    drawAzMap(map, state.zoneId);
+    if (!map.dataset.bound) {
+      map.dataset.bound = "1";
+      map.addEventListener("click", (e) => {
+        const path = e.target.closest("[data-zone]");
+        if (path) applyZone(path.getAttribute("data-zone"));
+      });
+      map.addEventListener("mousemove", (e) => {
+        const path = e.target.closest("[data-zone]");
+        const z = path ? path.getAttribute("data-zone") : null;
+        if (z !== mapHover) {
+          mapHover = z;
+          drawAzMap(map, state.zoneId);
+        }
+      });
+      map.addEventListener("mouseleave", () => {
+        if (mapHover != null) {
+          mapHover = null;
+          drawAzMap(map, state.zoneId);
+        }
+      });
+    }
   }
-  document.querySelectorAll("#az-map [data-zone]").forEach((p) => {
-    p.setAttribute("fill", p.getAttribute("data-zone") === state.zoneId ? "rgba(169,127,91,0.55)" : "rgba(169,127,91,0.18)");
-  });
+  const mapSrc = $("map-source");
+  if (mapSrc) {
+    mapSrc.textContent = "County outlines: U.S. Census TIGER cartographic boundaries (public domain, FIPS 04xxx, via us-atlas). Gila is shown with Pinal; Greenlee with Graham / Safford. Click a county to load that zone.";
+  }
   const pills = $("zone-pills");
   if (pills) {
     pills.innerHTML = ZONES.map((z) =>

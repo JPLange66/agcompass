@@ -1,6 +1,6 @@
 # Ag Compass
 
-Arizona’s market board for what Chicago doesn’t trade. Local AMS, NASS, and Federal Milk Marketing Order prices for produce, hay, dairy, and cattle — with an acre-foot profit planner behind the board. Polished copper compass rose (Arizona is the Copper State) on a navy field, with an Arizona sunburst. The original bronze source mark is kept on file, unused on the board.
+Arizona’s market board for what Chicago doesn’t trade. Local AMS, NASS, and Federal Milk Marketing Order prices for produce, hay, dairy, and cattle — with an acre-foot profit planner behind the board. Polished copper compass rose (Arizona is the Copper State) on a navy field, with an Arizona sunburst. The original bronze source mark is kept on file, unused on the board. The board uses a real Arizona county map (U.S. Census TIGER outlines) and a 52-week gross $/acre-foot chart with alfalfa as the copper benchmark.
 
 Live (GitHub Pages, same pattern as Langenator): https://jplange66.github.io/agcompass/
 

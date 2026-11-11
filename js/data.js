@@ -485,7 +485,7 @@ export const BORDER_LINES = [
 export const BORDER_NOTE = "USDA AMS FVDDAILY_MOV, Nov 10, 2026. Mexico-origin lines only, matched to the commodity heading immediately above each Nogales or San Luis row. Season-to-date and Nov 3–9 week (Nov 7–8 blank as weekend). This is a selected, verified extract — not a complete port total and not a crop-family rollup.";
 
 export const ZONES = [
-  { id: "az", name: "Statewide", path: "M 92 12 L 168 20 L 200 118 L 188 210 L 40 218 L 18 150 L 28 92 L 60 40 Z", blurb: "Statewide board. Yuma is one zone among many. Zones are a geographic selector, not a 2022 Census sales ranking — NASS county-profile PDFs were not retrieved as PDFs this build." },
+  { id: "az", name: "Statewide", path: "M 92 12 L 168 20 L 200 118 L 188 210 L 40 218 L 18 150 L 28 92 L 60 40 Z", blurb: "Statewide board. Yuma is one zone among many. County outlines are public-domain U.S. Census TIGER cartographic boundaries (FIPS 04xxx, via us-atlas). This map is a geographic zone selector, not a 2022 Census sales ranking — NASS county-profile PDFs were not retrieved as PDFs this build. Gila is grouped with Pinal; Greenlee with Graham / Safford." },
   { id: "yuma", name: "Yuma", path: "M 18 150 L 70 150 L 70 218 L 40 218 Z", blurb: "Yuma winter vegetables, desert hay, and the San Luis crossing. Review demo mix: iceberg, carrots, tomatoes (tomato and carrot prices start at $0 until you enter a shed or contract price).", districtId: "ycwua", farmAcres: 400, crops: { iceberg: 200, carrots: 120, tomatoes: 80 } },
   { id: "lapaz", name: "La Paz / Parker", path: "M 28 92 L 80 92 L 80 150 L 18 150 Z", blurb: "La Paz / Parker river-valley hay and field crops. UA La Paz 2024 budgets inform alfalfa, cotton, and sorghum cost defaults." },
   { id: "maricopa", name: "Maricopa / Central AZ", path: "M 80 92 L 140 92 L 140 150 L 80 150 Z", blurb: "Central Arizona dairy, hay, vegetables, and cotton country around Phoenix and the AMAs." },
@@ -493,6 +493,7 @@ export const ZONES = [
   { id: "cochise", name: "Cochise / Willcox", path: "M 150 150 L 200 118 L 188 210 L 150 210 Z", blurb: "Cochise / Willcox — pecans, chiles, wine grapes, and high-desert vegetables." },
   { id: "graham", name: "Graham / Safford", path: "M 150 118 L 188 118 L 188 150 L 150 150 Z", blurb: "Graham / Safford — Gila Valley cotton, hay, and pecans." },
   { id: "nogales", name: "Santa Cruz / Nogales", path: "M 110 188 L 150 188 L 150 218 L 110 218 Z", blurb: "Nogales gateway. Border-crossing volumes below are selected AMS movement lines, not a complete port total." },
+  { id: "pima", name: "Pima / Tucson", path: "", blurb: "Pima County around Tucson, shown on the county map so southern Arizona is complete. A Pima-specific shipping-point quote was not on IX_FV120, Nov 10; statewide hay, milk, and Western Arizona produce tickers still apply. Enter your district bill and local quotes. No default crop mix is loaded." },
   { id: "mohave", name: "Mohave", path: "M 28 40 L 80 40 L 80 92 L 28 92 Z", blurb: "Mohave — river agriculture and high-desert range." },
-  { id: "north", name: "Northern AZ", path: "M 80 12 L 168 20 L 168 80 L 80 80 Z", blurb: "Northern Arizona plateau and high country. Smaller irrigated acreage; included so the board is statewide." },
+  { id: "north", name: "Northern AZ", path: "M 80 12 L 168 20 L 168 80 L 80 80 Z", blurb: "Northern Arizona plateau and high country (Coconino, Yavapai, Navajo, and Apache counties on the map). Smaller irrigated acreage; included so the board is statewide." },
 ];
